@@ -10,90 +10,88 @@ using PhotoArchive.Models;
 
 namespace PhotoArchive.Controllers
 {
-    public class PhotosController : Controller
+    public class FilmsController : Controller
     {
         private readonly PhotoContext _context;
 
-        public PhotosController(PhotoContext context)
+        public FilmsController(PhotoContext context)
         {
             _context = context;
         }
 
-        // GET: Photos
+        // GET: Films
         public async Task<IActionResult> Index()
         {
-              return _context.Photos != null ? 
-                          View(await _context.Photos.ToListAsync()) :
-                          Problem("Entity set 'PhotoContext.Photos'  is null.");
+              return _context.Films != null ? 
+                          View(await _context.Films.ToListAsync()) :
+                          Problem("Entity set 'PhotoContext.Films'  is null.");
         }
 
-        // GET: Photos/Details/5
+        // GET: Films/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Photos == null)
+            if (id == null || _context.Films == null)
             {
                 return NotFound();
             }
 
-            var photo = await _context.Photos
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (photo == null)
+            var film = await _context.Films
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (film == null)
             {
                 return NotFound();
             }
 
-            return View(photo);
+            return View(film);
         }
 
-        // GET: Photos/Create
+        // GET: Films/Create
         public IActionResult Create()
         {
-
-            ViewBag.Films = _context.Films;
             return View();
         }
 
-
-        // POST: Photos/Create
+        // POST: Films/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,Name,Pic,Is_Liked,Page,Line,Place_In_Line,Format, Film")] Photo photo)
+        public async Task<IActionResult> Create([Bind("Id,Name,Camera,Date,Color,FolderName")] Film film)
         {
+            film.Photos = new List<Photo>();
             if (ModelState.IsValid)
             {
-                _context.Add(photo);
+                _context.Add(film);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(photo);
+            return View(film);
         }
 
-        // GET: Photos/Edit/5
+        // GET: Films/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Photos == null)
+            if (id == null || _context.Films == null)
             {
                 return NotFound();
             }
 
-            var photo = await _context.Photos.FindAsync(id);
-            if (photo == null)
+            var film = await _context.Films.FindAsync(id);
+            if (film == null)
             {
                 return NotFound();
             }
-            return View(photo);
+            return View(film);
         }
 
-        // POST: Photos/Edit/5
+        // POST: Films/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Name,Pic,Is_Liked,Page,Line,Place_In_Line,Format")] Photo photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Camera,Date,Color,FolderName")] Film film)
         {
-            if (id != photo.id)
+            if (id != film.Id)
             {
                 return NotFound();
             }
@@ -102,12 +100,12 @@ namespace PhotoArchive.Controllers
             {
                 try
                 {
-                    _context.Update(photo);
+                    _context.Update(film);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PhotoExists(photo.id))
+                    if (!FilmExists(film.Id))
                     {
                         return NotFound();
                     }
@@ -118,49 +116,49 @@ namespace PhotoArchive.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(photo);
+            return View(film);
         }
 
-        // GET: Photos/Delete/5
+        // GET: Films/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Photos == null)
+            if (id == null || _context.Films == null)
             {
                 return NotFound();
             }
 
-            var photo = await _context.Photos
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (photo == null)
+            var film = await _context.Films
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (film == null)
             {
                 return NotFound();
             }
 
-            return View(photo);
+            return View(film);
         }
 
-        // POST: Photos/Delete/5
+        // POST: Films/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Photos == null)
+            if (_context.Films == null)
             {
-                return Problem("Entity set 'PhotoContext.Photos'  is null.");
+                return Problem("Entity set 'PhotoContext.Films'  is null.");
             }
-            var photo = await _context.Photos.FindAsync(id);
-            if (photo != null)
+            var film = await _context.Films.FindAsync(id);
+            if (film != null)
             {
-                _context.Photos.Remove(photo);
+                _context.Films.Remove(film);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PhotoExists(int id)
+        private bool FilmExists(int id)
         {
-          return (_context.Photos?.Any(e => e.id == id)).GetValueOrDefault();
+          return (_context.Films?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

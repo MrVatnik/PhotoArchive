@@ -19,9 +19,6 @@
                 @Html.DisplayNameFor(model => model.Pic)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Is_Liked)
             </th>
             <th>
@@ -39,7 +36,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody id="photoItem">
+    <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -47,9 +44,6 @@
             </td>
             <td>
                 <img src="~/Images/Films/Films/@Html.DisplayFor(modelItem => item.Pic)" alt="no image" class="temp"/>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Is_Liked)
