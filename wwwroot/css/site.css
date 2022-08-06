@@ -16,3 +16,32 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.temp {
+    display: none;
+}
+
+.block{
+    display:block;
+}
+
+.photo{
+    width: 200px;
+}
+
+.photo_vertical {
+    height: 200px;
+}
+
+.photoBig {
+    width: 700px;
+}
+
+.photoBig_vertical {
+    height: 700px;
+}
+
+.itemBlock {
+    display: flex;
+    justify-content: space-between;
+}
