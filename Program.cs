@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using PhotoArchive.Data;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,3 +56,5 @@ app.MapControllerRoute(
     pattern: "{controller=Photos}/{action=Index}/{id?}");
 
 app.Run();
+
+

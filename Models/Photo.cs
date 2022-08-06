@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using PhotoArchive.Enums;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,11 +14,14 @@ namespace PhotoArchive.Models
 
         public string Name { get; set; }
 
-        public string Pic { get; set; }
+        public string Pic  { get; set; }
 
-        [DataType(DataType.Date)]
+        
+        /*[DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; }*/
+
+        public Film Film{ get; set; }
 
         public bool Is_Liked { get; set; }
 
@@ -27,7 +31,7 @@ namespace PhotoArchive.Models
 
         public int Place_In_Line { get; set; }
 
-        public Formats Format { get; set; }
+        public Format Format { get; set; }
 
     }
 }
