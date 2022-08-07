@@ -41,7 +41,13 @@ body {
     height: 700px;
 }
 
-.itemBlock {
+.itemData {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.DataBlock {
+    display: flex;
+    justify-content:space-evenly;
 }

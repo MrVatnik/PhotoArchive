@@ -19,6 +19,9 @@
                 @Html.DisplayNameFor(model => model.Pic)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Film)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Is_Liked)
             </th>
             <th>
@@ -30,20 +33,20 @@
             <th>
                 @Html.DisplayNameFor(model => model.Place_In_Line)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Format)
-            </th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="photoItem">       <!--ИД Важно!!!-->
 @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <img src="~/Images/Films/Films/@Html.DisplayFor(modelItem => item.Pic)" alt="no image" class="temp"/>
+                <img src="~/Images/Films/Films/@Html.DisplayFor(modelItem => item.Film.FolderName)/@Html.DisplayFor(modelItem => item.Pic)" alt="no image" class="temp" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Film.To_String)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Is_Liked)
@@ -56,9 +59,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Place_In_Line)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Format)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |

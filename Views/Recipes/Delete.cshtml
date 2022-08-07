@@ -1,4 +1,4 @@
-﻿@model PhotoArchive.Models.Film
+﻿@model PhotoArchive.Models.Recipe
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,32 +8,38 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Film</h4>
+    <h4>Recipe</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipe)
+            @Html.DisplayNameFor(model => model.EI)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Recipe.Id)
+            @Html.DisplayFor(model => model.EI)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Camera)
+            @Html.DisplayNameFor(model => model.FilmType)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Camera.Id)
+            @Html.DisplayFor(model => model.FilmType.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
+            @Html.DisplayNameFor(model => model.Developer)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
+            @Html.DisplayFor(model => model.Developer.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FolderName)
+            @Html.DisplayNameFor(model => model.Time)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FolderName)
+            @Html.DisplayFor(model => model.Time)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Color)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Color)
         </dd>
     </dl>
     
