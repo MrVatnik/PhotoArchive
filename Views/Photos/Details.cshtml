@@ -6,57 +6,70 @@
 
 <h1>Details</h1>
 
-<div>
+<div id="details">
+    <!--ИД Важно!!!-->
     <h4>Photo</h4>
     <hr />
-    <dl class="itemBlock">
-        <div>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Film)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Film)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Is_Liked)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Is_Liked)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Page)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Page)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Line)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Line)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Place_In_Line)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Place_In_Line)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Format)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Format)
+    <dl>
+        <div class="DataBlock">
+            <dd class="itemData">
+                <img src="~/Images/Films/Films/@Html.DisplayFor(model => model.Film.FolderName)/@Html.DisplayFor(model => model.Pic)" alt="no image" class="temp" />
             </dd>
         </div>
-        <div>
-            <dd class = "col-sm-10">
-            <img src="~/Images/Films/Films/@Html.DisplayFor(model => model.Pic)" alt="no image" class="temp"/>
+        <div class="DataBlock">
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+            </div>
+
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Film)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Film.To_String)
+                </dd>
+            </div>
+
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Is_Liked)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Is_Liked)
+                </dd>
+            </div>
+
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Page)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Page)
+                </dd>
+            </div>
+
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Line)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Line)
+                </dd>
+            </div>
+
+            <div class="itemData">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Place_In_Line)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Place_In_Line)
+                </dd>
+            </div>
         </div>
     </dl>
 </div>

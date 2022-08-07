@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PhotoArchive.Models.Film>
+﻿@model IEnumerable<PhotoArchive.Models.Recipe>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,16 +13,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Recipe)
+                @Html.DisplayNameFor(model => model.EI)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Camera)
+                @Html.DisplayNameFor(model => model.FilmType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(model => model.Developer)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FolderName)
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Color)
             </th>
             <th></th>
         </tr>
@@ -31,16 +34,19 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Recipe.To_String)
+                @Html.DisplayFor(modelItem => item.EI)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Camera.To_String)
+                @Html.DisplayFor(modelItem => item.FilmType.To_String)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
+                @Html.DisplayFor(modelItem => item.Developer.To_String)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FolderName)
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Color)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

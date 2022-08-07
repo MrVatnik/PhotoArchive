@@ -24,6 +24,12 @@
             @Html.DisplayFor(model => model.Pic)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Film)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Film.Id)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Is_Liked)
         </dt>
         <dd class = "col-sm-10">
@@ -46,12 +52,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Place_In_Line)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Format)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Format)
         </dd>
     </dl>
     
