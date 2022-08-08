@@ -12,25 +12,29 @@ namespace PhotoArchive.Models
         [DisplayName("Id")]
         public int Id { get; set; }
 
-        public int EI { get; set; }
+        public decimal EI { get; set; }
 
         public int FilmTypeId { get; set; }
+        [DisplayName("Type of Film")]
         public FilmType? FilmType { get; set; }
 
         public int DeveloperId { get; set; }
 
         public Developer? Developer { get; set; }
 
-
-        [DataType(DataType.Time)]
-        [DisplayFormat(DataFormatString = "{0:mmm:ss}", ApplyFormatInEditMode = true)]
-        public DateTime Time { get; set; }
+        [DisplayName("Time:Minutes")]
+        public int Min { get; set; }
+        [DisplayName("Seconds")]
+        public int Sec { get; set; }
 
         public bool Color {get; set;}
 
         public override string ToString()
         {
-            return FilmType + " in " + Developer + " as " + EI + " EI";
+            if (Math.Truncate(EI) > 0 || Math.Truncate(EI) < 0)
+                return FilmType + " in " + Developer + " as " + (int)EI + " EI";
+            else
+                return FilmType + " in " + Developer + " as " + EI + " EI";
         }
         public string To_String
         {

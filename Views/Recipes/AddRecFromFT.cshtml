@@ -1,10 +1,10 @@
 ﻿@model PhotoArchive.Models.Recipe
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add to filmType";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
 <h4>Recipe</h4>
 <hr />
@@ -18,11 +18,12 @@
                 <span asp-validation-for="EI" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FilmTypeId" class="control-label"></label>
-                <select asp-for="FilmTypeId" class ="form-control" asp-items="ViewBag.FilmTypeId"></select>
+                <label asp-for="FilmType" class="control-label"></label>:
+                @Model.FilmType
+                <input asp-for="FilmTypeId" class="form-control" hidden/>
             </div>
             <div class="form-group">
-                <label asp-for="DeveloperId" class="control-label"></label>
+                <label asp-for="Developer" class="control-label"></label>
                 <select asp-for="DeveloperId" class ="form-control" asp-items="ViewBag.DeveloperId"></select>
             </div>
             <div class="form-group">
@@ -41,7 +42,7 @@
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="AddRecFromFT" class="btn btn-primary" />
             </div>
         </form>
     </div>

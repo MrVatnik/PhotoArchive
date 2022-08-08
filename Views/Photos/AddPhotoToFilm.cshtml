@@ -1,10 +1,10 @@
 ﻿@model PhotoArchive.Models.Photo
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add To Film";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
 <h4>Photo</h4>
 <hr />
@@ -23,9 +23,10 @@
                 <span asp-validation-for="Pic" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Film" class="control-label" hidden></label>
-                <input asp-for="FilmId" class="form-control" hidden/>
-                <span asp-validation-for="FilmId" class="text-danger" hidden></span>
+                <label asp-for="Film" class="control-label"></label>:
+                @Model.Film
+                <select asp-for="FilmId" class ="form-control" asp-items="ViewBag.FilmId" hidden></select>
+                
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">

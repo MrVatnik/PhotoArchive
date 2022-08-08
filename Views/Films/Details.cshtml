@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
     <h4>Film</h4>
@@ -37,7 +37,7 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
-    <a asp-controller="Photos" asp-action="AddPhotoToFilm" asp-route-FilmId="@Model?.Id">| Add Photo |</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>|
+    <a asp-controller="Photos" asp-action="AddPhotoToFilm" asp-route-Id="@Model?.Id"> Add Photo </a>|
     <a asp-action="Index">Back to List</a>
 </div>

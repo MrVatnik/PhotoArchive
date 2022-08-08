@@ -44,7 +44,7 @@ namespace PhotoArchive.Controllers
                 .Include(p => p.Film.Camera).Include(p => p.Film.Recipe)
                 .Include(p => p.Film.Recipe.Developer).Include(p => p.Film.Recipe.FilmType)
                 .Include(p => p.Film.Camera.Format)
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (photo == null)
             {
                 return NotFound();
@@ -74,6 +74,7 @@ namespace PhotoArchive.Controllers
             if (ModelState.IsValid)
             {
                 photo.Film = _context.Films.Find(photo.FilmId);
+
                 _context.Add(photo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -116,7 +117,7 @@ namespace PhotoArchive.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
         {
-            if (id != photo.id)
+            if (id != photo.Id)
             {
                 return NotFound();
             }
@@ -131,7 +132,7 @@ namespace PhotoArchive.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PhotoExists(photo.id))
+                    if (!PhotoExists(photo.Id))
                     {
                         return NotFound();
                     }
@@ -161,7 +162,7 @@ namespace PhotoArchive.Controllers
 
             var photo = await _context.Photos
                 .Include(p => p.Film)
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (photo == null)
             {
                 return NotFound();
@@ -191,52 +192,37 @@ namespace PhotoArchive.Controllers
 
         private bool PhotoExists(int id)
         {
-          return (_context.Photos?.Any(e => e.id == id)).GetValueOrDefault();
+          return (_context.Photos?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
 
 
 
-        public async Task<IActionResult> AddPhotoToFilm(int? FilmId)
+        public async Task<IActionResult> AddPhotoToFilm(int? Id)
         {
-            //ViewBag.FilmId = FilmId.ToString();
-
-            //ViewData["FilmId"] = new SelectList(_context.Films, "Id", null, FilmId);
-            //return View();
-
-            if (FilmId == null || _context.Films == null)
-            {
+            if (Id == null || _context.Films == null)
                 return NotFound();
-            }
 
-            var Film = await _context.Films.FindAsync(FilmId);
-            Photo photo = new Photo();
-            photo.Film = Film;
-            if (photo == null)
-            {
+            List<Film> Films = _context.Films
+                .Include(p => p.Camera).Include(p => p.Recipe)
+                .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
+                .Include(p => p.Camera.Format).ToList();
+
+            Photo p = new Photo();
+            
+            if (p == null)
                 return NotFound();
-            }
-            ViewData["FilmId"] = new SelectList(_context.Films, "Id", null, photo.FilmId);
-            return View(photo);
+
+            var F = await _context.Films.FindAsync(Id);
+            if (F == null)
+                return NotFound();
+
+            p.Film = F;
+            p.FilmId = p.Film.Id;
+
+            
+            ViewData["FilmId"] = new SelectList(Films, "Id", null, p.FilmId);
+            return View(p);
         }
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddPhotoToFilm([Bind("id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
-        {
-            if (ModelState.IsValid)
-            {
-                photo.Film = _context.Films.Find(photo.FilmId);
-                _context.Add(photo);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["FilmId"] = new SelectList(_context.Films, "Id", null, photo.FilmId);
-            return View(photo);
-        }
-
-
     }
 }

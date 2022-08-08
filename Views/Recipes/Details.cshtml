@@ -29,10 +29,16 @@
             @Html.DisplayFor(model => model.Developer.To_String)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Time)
+            @Html.DisplayNameFor(model => model.Min)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Time)
+            @Html.DisplayFor(model => model.Min)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Sec)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Sec)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Color)
@@ -43,6 +49,8 @@
     </dl>
 </div>
 <div>
+    
+    <a asp-controller="Films" asp-action="AddFilmFromRec" asp-route-Id="@Model?.Id"> Add Film </a>|
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

@@ -166,5 +166,33 @@ namespace PhotoArchive.Controllers
         {
           return (_context.Cameras?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
+
+        public async Task<IActionResult> AddCamFromFormat(int? Id)
+        {
+            if (Id == null || _context.Formats == null)
+                return NotFound();
+
+
+            Camera C = new Camera();
+
+            if (C == null)
+                return NotFound();
+
+            var F = await _context.Formats.FindAsync(Id);
+
+            if (F == null)
+                return NotFound();
+
+            C.Format = F;
+            C.FormatId = C.Format.Id;
+
+
+
+            ViewData["FormatId"] = new SelectList(_context.Formats, "Id", null, C.FormatId);
+            return View(C);
+        }
+        
     }
 }
