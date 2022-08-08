@@ -51,3 +51,24 @@ body {
     display: flex;
     justify-content:space-evenly;
 }
+
+.RecInFTData {
+    display: flex;
+    justify-content:center;
+}
+.RecInFT {
+    display: flex;
+    justify-content: center;
+    border: groove;
+    margin:10px;
+}
+
+.RecInFTEI{
+    margin-right:10px;
+}
+
+.DevelopmentOptions {
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+}

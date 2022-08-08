@@ -41,6 +41,7 @@ namespace PhotoArchive.Controllers
             var film = await _context.Films
                 .Include(f => f.Camera).Include(f => f.Recipe)
                 .Include(f => f.Recipe.FilmType)
+                .Include(f => f.Recipe.Developer)
                 .Include(f => f.Camera.Format)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (film == null)
@@ -54,6 +55,12 @@ namespace PhotoArchive.Controllers
         // GET: Films/Create
         public IActionResult Create()
         {
+
+            if (_context.Recipes == null || _context.Cameras == null)
+            {
+                return NotFound();
+            }
+
             List<Recipe> Recipes = _context.Recipes
                 .Include(f => f.FilmType)
                 .Include(f => f.Developer)
@@ -75,10 +82,7 @@ namespace PhotoArchive.Controllers
             if (ModelState.IsValid)
             {
                 film.Recipe = _context.Recipes.Find(film.RecipeId);
-
-                film.Recipe.Developer = _context.Developers.Find(film.Recipe.DeveloperId);
-                film.Recipe.FilmType = _context.FilmTypes.Find(film.Recipe.FilmTypeId);
-
+                
                 film.Camera = _context.Cameras.Find(film.CameraId);
 
                 _context.Add(film);
@@ -213,5 +217,67 @@ namespace PhotoArchive.Controllers
         {
           return (_context.Films?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
+
+
+        public async Task<IActionResult> AddFilmFromRec(int? id)
+        {
+            if (id == null || _context.Recipes == null||_context.Cameras == null)
+                return NotFound();
+
+            List<Recipe> Recipes = _context.Recipes
+                .Include(f => f.FilmType)
+                .Include(f => f.Developer)
+                .ToList();
+
+            Film F = new Film();
+
+            if(F == null)
+                return NotFound();
+
+            var R = await _context.Recipes.FindAsync(id);
+            if(R==null)
+                return NotFound();
+
+            F.Recipe = R;
+            F.RecipeId = F.Recipe.Id;
+
+
+            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null);
+            ViewData["RecipeId"] = new SelectList(Recipes, "Id", null, F.RecipeId);
+            return View(F);
+        }
+
+
+
+        public async Task<IActionResult> AddFilmFromCam(int? id)
+        {
+            if (id == null || _context.Recipes == null || _context.Cameras == null)
+                return NotFound();
+
+            List<Recipe> Recipes = _context.Recipes
+                .Include(f => f.FilmType)
+                .Include(f => f.Developer)
+                .ToList();
+
+            Film F = new Film();
+
+            if (F == null)
+                return NotFound();
+
+            var C = await _context.Cameras.FindAsync(id);
+            if (C == null)
+                return NotFound();
+
+            F.Camera = C;
+            F.CameraId = F.Camera.Id;
+
+
+            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id",null, F.CameraId);
+            ViewData["RecipeId"] = new SelectList(Recipes, "Id", null);
+            return View(F);
+        }
+
     }
 }

@@ -13,11 +13,15 @@ namespace PhotoArchive.Models
         public string Name { get; set; }
         public decimal ISO {get; set; }
 
+        [DisplayName("Is Color possible?")] 
         public bool Color_Is_Possible { get; set; }
 
         public override string ToString()
         {
-            return Name + " "  + ISO;
+            if (Math.Truncate(ISO) > 0 || Math.Truncate(ISO) < 0)
+                return Name + " " + (int)ISO;
+            else
+                return Name + " " + ISO;
         }
 
         public string To_String

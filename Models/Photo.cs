@@ -9,10 +9,11 @@ namespace PhotoArchive.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         [DisplayName("Id")]
-        public int id { get; set;}
+        public int Id { get; set;}
 
         public string? Name { get; set; }
 
+        [DisplayName("Picture")]
         public string? Pic  { get; set; }
 
         
@@ -23,12 +24,14 @@ namespace PhotoArchive.Models
         public int FilmId { get; set; }
         public Film? Film { get; set; }
 
+        [DisplayName("Is Liked")]
         public bool Is_Liked { get; set; }
 
         public int Page { get; set; }
 
         public int Line { get; set; }
 
+        [DisplayName("Place in Line")]
         public int Place_In_Line { get; set; }
 
     }

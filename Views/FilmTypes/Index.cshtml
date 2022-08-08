@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<PhotoArchive.Models.FilmType>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Film Types";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -37,8 +37,9 @@
                 @Html.DisplayFor(modelItem => item.Color_Is_Possible)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-controller="Recipes" asp-action="AddRecFromFT" asp-route-Id="@item.Id">Add Recipe</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

@@ -18,20 +18,19 @@ namespace PhotoArchive.Models
         public Camera? Camera { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
-        public List<Photo>? Photos { get; set; }
-
+        [DisplayName("Folder")]
         public string FolderName { get; set; }
 
         public override string ToString()
         {
             
             if(Recipe == null)
-                return "" + Date.ToString("yy-MM-dd") + " хз " + Camera;
+                return "" + Date.ToString("yy-MM-dd") + "_X3_" + Camera;
             else
-                return "" + Date.ToString("yy-MM-dd") + (Recipe.Color ? " цв " : " чб ") + Camera;
+                return "" + Date.ToString("yy-MM-dd") + (Recipe.Color ? "_col_" : "_bw_") + Camera;
         }
 
         public string To_String

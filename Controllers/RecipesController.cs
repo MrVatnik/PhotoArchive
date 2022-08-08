@@ -59,7 +59,7 @@ namespace PhotoArchive.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EI,FilmTypeId,DeveloperId,Time,Color")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Id,EI,FilmTypeId,DeveloperId,Min,Sec,Color")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace PhotoArchive.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EI,FilmTypeId,DeveloperId,Time,Color")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EI,FilmTypeId,DeveloperId,Min,Sec,Color")] Recipe recipe)
         {
             if (id != recipe.Id)
             {
@@ -165,14 +165,72 @@ namespace PhotoArchive.Controllers
             {
                 _context.Recipes.Remove(recipe);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RecipeExists(int id)
         {
-          return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+
+
+
+        public async Task<IActionResult> AddRecFromFT(int? Id)
+        {
+            if (Id == null || _context.FilmTypes == null || _context.Developers == null)
+                return NotFound();
+
+
+            Recipe R = new Recipe();
+
+            if (R == null)
+                return NotFound();
+
+            var filmType = await _context.FilmTypes.FindAsync(Id);
+
+            if (filmType == null)
+                return NotFound();
+
+            R.FilmType = filmType;
+            R.FilmTypeId = R.FilmType.Id;
+
+
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", null);
+            ViewData["FilmTypeId"] = new SelectList(_context.FilmTypes, "Id", null, R.FilmType.Id);
+
+            return View(R);
+        }
+
+
+
+
+        public async Task<IActionResult> AddRecFromDev(int? Id)
+        {
+            if (Id == null || _context.FilmTypes == null || _context.Developers == null)
+                return NotFound();
+
+
+            Recipe R = new Recipe();
+
+            if (R == null)
+                return NotFound();
+
+            var Dev = await _context.Developers.FindAsync(Id);
+
+            if (Dev == null)
+                return NotFound();
+
+            R.Developer = Dev;
+            R.DeveloperId = R.Developer.Id;
+
+
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", null, R.DeveloperId);
+            ViewData["FilmTypeId"] = new SelectList(_context.FilmTypes, "Id", null);
+
+            return View(R);
         }
     }
 }

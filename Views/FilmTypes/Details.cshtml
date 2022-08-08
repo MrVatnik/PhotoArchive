@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    var Reciepes = ViewBag.Reciepes as List<Recipe>;
 }
 
 <h1>Details</h1>
@@ -10,25 +11,43 @@
     <h4>FilmType</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ISO)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ISO)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Color_Is_Possible)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Color_Is_Possible)
         </dd>
     </dl>
+
+    <h4>Development Options</h4>
+    <a asp-controller="Recipes" asp-action="AddRecFromFT" asp-route-Id="@Model?.Id"><h5>Add new</h5></a>
+    <div class="DevelopmentOptions">
+        @foreach (Recipe Rec in (List<Recipe>)ViewBag.Recipes)
+        {
+            <div class="RecInFT">
+                <a asp-controller="Recipes" asp-action="Details" asp-route-id="@Rec.Id" class="RecInFTData">
+                    <div class="RecInFTEI">
+                        as @Rec.EI
+                    </div>
+                    <div>
+                        in @Rec.Developer.Name
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
