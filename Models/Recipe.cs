@@ -31,7 +31,7 @@ namespace PhotoArchive.Models
 
         public override string ToString()
         {
-            if (Math.Truncate(EI) > 0 || Math.Truncate(EI) < 0)
+            if (Math.Truncate(EI) != 0)
                 return FilmType + " in " + Developer + " as " + (int)EI + " EI";
             else
                 return FilmType + " in " + Developer + " as " + EI + " EI";
@@ -41,6 +41,28 @@ namespace PhotoArchive.Models
             get
             {
                 return ToString();
+            }
+        }
+
+        public string To_StringForFT
+        {
+            get
+            {
+                if (Math.Truncate(EI) != 0)
+                    return "In " + Developer + " as " + (int)EI + " EI";
+                else
+                    return "In " + Developer + " as " + EI + " EI";
+            }
+        }
+
+        public string To_StringForDev
+        {
+            get
+            {
+                if (Math.Truncate(EI) != 0)
+                    return FilmType + " as " + (int)EI + " EI";
+                else
+                    return FilmType + " as " + EI + " EI";
             }
         }
     }

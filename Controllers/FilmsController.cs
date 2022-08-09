@@ -49,6 +49,11 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+
+            ViewData["Photos"] = _context.Photos
+                .Where(p=>p.FilmId==film.Id)
+                .OrderBy(p => p.Pic).ToList();
+
             return View(film);
         }
 

@@ -31,25 +31,25 @@
         </dd>
     </dl>
 
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+<div class="Descenders">
     <h4>Development Options</h4>
-    <a asp-controller="Recipes" asp-action="AddRecFromFT" asp-route-Id="@Model?.Id"><h5>Add new</h5></a>
-    <div class="DevelopmentOptions">
+    <a asp-controller="Recipes" asp-action="AddRecFromFT" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+    <div class="DescendersList">
         @foreach (Recipe Rec in (List<Recipe>)ViewBag.Recipes)
         {
-            <div class="RecInFT">
-                <a asp-controller="Recipes" asp-action="Details" asp-route-id="@Rec.Id" class="RecInFTData">
-                    <div class="RecInFTEI">
-                        as @Rec.EI
-                    </div>
-                    <div>
-                        in @Rec.Developer.Name
+            <div class="OneDescender">
+                <a asp-controller="Recipes" asp-action="Details" asp-route-id="@Rec.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        @Rec.To_StringForFT
                     </div>
                 </a>
             </div>
         }
     </div>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
 </div>

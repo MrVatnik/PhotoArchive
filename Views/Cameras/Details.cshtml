@@ -10,22 +10,42 @@
     <h4>Camera</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Format)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Format.To_String)
         </dd>
     </dl>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>|
-    <a asp-controller="Films" asp-action="AddFilmFromCam" asp-route-Id="@Model?.Id"> Add Film </a>|
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
+</div>
+
+
+<div class="Descenders">
+
+    <h4>Shot films</h4>
+    <a asp-controller="Films" asp-action="AddFilmFromRec" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+
+    <div class="DescendersList">
+        @foreach (Film film in (List<Film>)ViewBag.Films)
+        {
+            <div class="OneDescender">
+                <a asp-controller="Films" asp-action="Details" asp-route-id="@film.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        @film.To_String
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>

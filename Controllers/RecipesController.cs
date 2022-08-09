@@ -43,6 +43,12 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+            ViewData["Films"] = _context.Films
+                .Include(f => f.Recipe).Include(f => f.Recipe.FilmType)
+                .Include(f => f.Camera)
+                .Where(f => f.RecipeId.Equals(recipe.Id))
+                .OrderBy(f => f.Date).ToList<Film>();
+
             return View(recipe);
         }
 

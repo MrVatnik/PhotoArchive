@@ -52,22 +52,30 @@ body {
     justify-content:space-evenly;
 }
 
-.RecInFTData {
+.DescenderData {
     display: flex;
-    justify-content:center;
+    justify-content: center;
 }
-.RecInFT {
+.OneDescender {
     display: flex;
     justify-content: center;
     border: groove;
-    margin:10px;
+    margin: 10px;
 }
 
-.RecInFTEI{
-    margin-right:10px;
+
+
+.DescenderDesc {
+    margin: 10px;
 }
 
-.DevelopmentOptions {
+.Descenders {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction:column;
+    margin-top:25px;
+}
+.DescendersList {
     width: auto;
     display: flex;
     flex-wrap: wrap;
@@ -79,3 +87,20 @@ body {
     color: black;
     text-decoration: underline;
 }
+
+
+.OneDescenderPic {
+    display: flex;
+    justify-content: center;
+    border: groove;
+    margin: 5px;
+    width: 225px;
+    height: 160px;
+}
+
+.photo_ver_rot {
+    height: 200px;
+    transform: rotate(90deg);
+    margin-top: -33px;
+}
+

@@ -26,3 +26,16 @@ $(window).on('load', function () {
         $(this).addClass('block');
     });
 });
+
+
+$(window).on('load', function () {
+    $('#FilmPhotosBlock img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
+        if ($(this).height() < $(this).width()) {
+            $(this).addClass('photo');
+        } else {
+            $(this).addClass('photo_ver_rot');
+        }
+        $(this).removeClass('temp');
+        $(this).addClass('block');
+    });
+});
