@@ -92,15 +92,23 @@ body {
 .OneDescenderPic {
     display: flex;
     justify-content: center;
-    border: groove;
-    margin: 5px;
-    width: 225px;
-    height: 160px;
+    //border: groove;
+    //margin: 5px;
+    width: 200px;
+    height: 140px;
 }
 
 .photo_ver_rot {
-    height: 200px;
+    height: 175px;
     transform: rotate(90deg);
-    margin-top: -33px;
+    margin-top: -30px;
 }
 
+.photo_hor {
+    width: 175px;
+}
+
+.liked_True {
+    border: groove;
+    border-color:red;
+}

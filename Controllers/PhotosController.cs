@@ -56,6 +56,11 @@ namespace PhotoArchive.Controllers
         // GET: Photos/Create
         public IActionResult Create()
         {
+            if (_context.Films == null)
+            {
+                return NotFound();
+            }
+
             List<Film> films = _context.Films
                 .Include(p => p.Camera).Include(p => p.Recipe)
                 .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
@@ -229,6 +234,71 @@ namespace PhotoArchive.Controllers
             
             ViewData["FilmId"] = new SelectList(Films, "Id", null, p.FilmId);
             return View(p);
+        }
+
+
+        //GET
+        public async Task<IActionResult> AddToFilmByFile(int? Id)
+        {
+            if (Id == null || _context.Films == null)
+                return NotFound();
+
+            List<Film> Films = _context.Films
+                .Include(p => p.Camera).Include(p => p.Recipe)
+                .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
+                .Include(p => p.Camera.Format).ToList();
+
+            Photo p = new Photo();
+
+            if (p == null)
+                return NotFound();
+
+            var F = await _context.Films.FindAsync(Id);
+            if (F == null)
+                return NotFound();
+
+            p.Film = F;
+            p.FilmId = p.Film.Id;
+
+
+            ViewData["FilmId"] = new SelectList(Films, "Id", null, p.FilmId);
+            return View(p);
+        }
+
+
+        //POST
+        public async Task<IActionResult> AddToFilmByFiles(int FilmId,int page, List<IFormFile> uploadedFiles)
+        {
+            
+            if (uploadedFiles.Count() != 0)
+            {
+                foreach (IFormFile uploadedFile in uploadedFiles)
+                {
+                    Photo photo = new Photo();
+                    photo.Name = uploadedFile.FileName;
+                    photo.Pic = uploadedFile.FileName;
+                    photo.FilmId = FilmId;
+                    photo.Film = _context.Films.Find(photo.FilmId);
+                    photo.Page=page;
+
+                    _context.Add(photo);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction("Details", "Films", new { Id = FilmId });
+            }
+            else
+            {
+                List<Film> Films = _context.Films
+                .Include(p => p.Camera).Include(p => p.Recipe)
+                .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
+                .Include(p => p.Camera.Format).ToList();
+                ViewData["FilmId"] = new SelectList(Films, "Id", null, FilmId);
+                return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
+            }
+
+
+            
+            
         }
     }
 }

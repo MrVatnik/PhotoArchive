@@ -46,13 +46,14 @@
 <div class="Descenders" id="FilmPhotosBlock">
     <h4>Photos</h4>
     <a asp-controller="Photos" asp-action="AddPhotoToFilm" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+    <a asp-controller="Photos" asp-action="AddToFilmByFile" asp-route-Id="@Model?.Id"><h6>Add by files</h6></a>
     <div class="DescendersList">
         @foreach (Photo photo in (List<Photo>)ViewBag.Photos)
         {
             <div class="OneDescenderPic">
-                <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData">
+                <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData" >
                     <div class="DescenderDesc">
-                        <img src="~/Images/Films/Films/@Model.FolderName/@photo.Pic" alt="no image" class="temp" />
+                        <img src="~/Images/Films/Films/@Model.FolderName/@photo.Pic" alt="no image" class="temp liked_@photo.Is_Liked"/>
                     </div>
                 </a>
             </div>
