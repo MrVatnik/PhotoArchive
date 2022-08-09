@@ -21,8 +21,12 @@
             @Html.DisplayNameFor(model => model.Format)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Format.Id)
+            @Html.DisplayFor(model => model.Format.To_String)
         </dd>
+        
+        <div class = "DelMess">
+            @ViewData["Message"]
+        </div>
     </dl>
     
     <form asp-action="Delete">

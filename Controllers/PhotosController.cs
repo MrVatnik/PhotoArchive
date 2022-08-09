@@ -69,7 +69,7 @@ namespace PhotoArchive.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
+        public async Task<IActionResult> Create([Bind("Id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
         {
             if (ModelState.IsValid)
             {
@@ -115,9 +115,9 @@ namespace PhotoArchive.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
+        public async Task<IActionResult> Edit(int Id, [Bind("Id,Name,Pic,FilmId,Is_Liked,Page,Line,Place_In_Line")] Photo photo)
         {
-            if (id != photo.Id)
+            if (Id != photo.Id)
             {
                 return NotFound();
             }
@@ -127,8 +127,14 @@ namespace PhotoArchive.Controllers
                 try
                 {
                     photo.Film = _context.Films.Find(photo.FilmId);
-                    _context.Update(photo);
-                    await _context.SaveChangesAsync();
+                    if (photo.Film != null)
+                    {
+                        photo.FilmId = photo.Film.Id;
+                        _context.Update(photo);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                        return NotFound();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

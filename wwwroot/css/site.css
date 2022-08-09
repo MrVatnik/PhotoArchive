@@ -72,3 +72,10 @@ body {
     display: flex;
     flex-wrap: wrap;
 }
+
+.DelMess {
+    font-weight: bold;
+    font-size: x-large;
+    color: black;
+    text-decoration: underline;
+}

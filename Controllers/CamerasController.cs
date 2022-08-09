@@ -140,6 +140,22 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+
+            var films = _context.Films.Where(f => f.CameraId == camera.Id).ToList();
+            List<Photo> photos = new List<Photo>();
+            foreach (Film film in films)
+            {
+                if (film != null)
+                {
+                    photos.AddRange(_context.Photos.Where(p => p.FilmId == film.Id).ToList());
+                }
+            }
+
+
+            ViewData["Message"] = "It contains " + films.Count + " films, " +
+                photos.Count + " photos in total.";
+
+
             return View(camera);
         }
 
