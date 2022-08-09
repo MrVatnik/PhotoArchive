@@ -10,16 +10,33 @@
     <h4>Developer</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
 </div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-controller="Recipes" asp-action="AddRecFromDev" asp-route-Id="@Model?.Id"> Add recipe </a>|
     <a asp-action="Index">Back to List</a>
+</div>
+
+<div class="Descenders">
+    <h4>Existing recipes</h4>
+    <a asp-controller="Recipes" asp-action="AddRecFromFT" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+    <div class="DescendersList">
+        @foreach (Recipe Rec in (List<Recipe>)ViewBag.Recipes)
+        {
+            <div class="OneDescender">
+                <a asp-controller="Recipes" asp-action="Details" asp-route-id="@Rec.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        @Rec.To_StringForDev
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>

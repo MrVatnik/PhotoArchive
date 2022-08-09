@@ -18,8 +18,30 @@
         </dd>
     </dl>
 </div>
+
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-controller="Cameras" asp-action="AddCamFromFormat" asp-route-Id="@Model?.Id"> Add Camera </a>|
     <a asp-action="Index">Back to List</a>
+</div>
+
+
+<div class="Descenders">
+
+    <h4>Cameras</h4>
+    
+    <a asp-controller="Cameras" asp-action="AddCamFromFormat" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+
+    <div class="DescendersList">
+        @foreach (Camera camera in (List<Camera>)ViewBag.Cameras)
+        {
+            <div class="OneDescender">
+                <a asp-controller="Cameras" asp-action="Details" asp-route-id="@camera.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        @camera.To_String
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>

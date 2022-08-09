@@ -10,34 +10,52 @@
     <h4>Film</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Recipe)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Recipe.To_String)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Camera)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Camera.To_String)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Date)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Date)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FolderName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FolderName)
         </dd>
     </dl>
 </div>
+
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>|
-    <a asp-controller="Photos" asp-action="AddPhotoToFilm" asp-route-Id="@Model?.Id"> Add Photo </a>|
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
+</div>
+
+<div class="Descenders" id="FilmPhotosBlock">
+    <h4>Photos</h4>
+    <a asp-controller="Photos" asp-action="AddPhotoToFilm" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+    <div class="DescendersList">
+        @foreach (Photo photo in (List<Photo>)ViewBag.Photos)
+        {
+            <div class="OneDescenderPic">
+                <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        <img src="~/Images/Films/Films/@Model.FolderName/@photo.Pic" alt="no image" class="temp" />
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>

@@ -10,47 +10,62 @@
     <h4>Recipe</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.EI)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EI)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FilmType)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FilmType.To_String)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Developer)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Developer.To_String)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Min)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Min)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Sec)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Sec)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Color)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Color)
         </dd>
     </dl>
 </div>
 <div>
-    
-    <a asp-controller="Films" asp-action="AddFilmFromRec" asp-route-Id="@Model?.Id"> Add Film </a>|
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
+</div>
+
+<div class="Descenders">
+    <h4>Developed films</h4>
+    <a asp-controller="Films" asp-action="AddFilmFromRec" asp-route-Id="@Model?.Id"><h6>Add new</h6></a>
+    <div class="DescendersList">
+        @foreach (Film film in (List<Film>)ViewBag.Films)
+        {
+            <div class="OneDescender">
+                <a asp-controller="Films" asp-action="Details" asp-route-id="@film.Id" class="DescenderData">
+                    <div class="DescenderDesc">
+                        @film.To_String
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>

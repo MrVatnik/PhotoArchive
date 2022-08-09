@@ -42,6 +42,17 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+
+
+
+            ViewData["Cameras"] = _context.Cameras
+               .Include(c => c.Format)
+               .Where(c => c.FormatId.Equals(format.Id))
+               .OrderByDescending(c => _context.Films.Where(f => f.CameraId.Equals(c.Id)).Count())       //sort cameras by amount of films shot
+               .ToList<Camera>();
+
+
+
             return View(format);
         }
 
