@@ -175,21 +175,25 @@ namespace PhotoArchive.Controllers
         }
 
         // GET: Films/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? Id)
         {
-            if (id == null || _context.Films == null)
+            if (Id == null || _context.Films == null)
             {
                 return NotFound();
             }
 
             var film = await _context.Films
-                .Include(f => f.Camera)
-                .Include(f => f.Recipe)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(f => f.Camera).Include(f => f.Recipe)
+                .Include(f=>f.Recipe.Developer).Include(f => f.Recipe.FilmType)
+                .FirstOrDefaultAsync(m => m.Id == Id);
             if (film == null)
             {
                 return NotFound();
             }
+
+            var photos = _context.Photos.Where(p => p.FilmId == film.Id).ToList();
+
+            ViewData["Message"] = "It contains " + photos.Count + " photos.";
 
             return View(film);
         }
@@ -197,13 +201,13 @@ namespace PhotoArchive.Controllers
         // POST: Films/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int Id)
         {
             if (_context.Films == null)
             {
                 return Problem("Entity set 'PhotoContext.Films'  is null.");
             }
-            var film = await _context.Films.FindAsync(id);
+            var film = await _context.Films.FindAsync(Id);
             if (film != null)
             {
                 _context.Films.Remove(film);
@@ -213,17 +217,17 @@ namespace PhotoArchive.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool FilmExists(int id)
+        private bool FilmExists(int Id)
         {
-          return (_context.Films?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Films?.Any(e => e.Id == Id)).GetValueOrDefault();
         }
 
 
 
 
-        public async Task<IActionResult> AddFilmFromRec(int? id)
+        public async Task<IActionResult> AddFilmFromRec(int? Id)
         {
-            if (id == null || _context.Recipes == null||_context.Cameras == null)
+            if (Id == null || _context.Recipes == null||_context.Cameras == null)
                 return NotFound();
 
             List<Recipe> Recipes = _context.Recipes
@@ -236,7 +240,7 @@ namespace PhotoArchive.Controllers
             if(F == null)
                 return NotFound();
 
-            var R = await _context.Recipes.FindAsync(id);
+            var R = await _context.Recipes.FindAsync(Id);
             if(R==null)
                 return NotFound();
 
@@ -251,9 +255,9 @@ namespace PhotoArchive.Controllers
 
 
 
-        public async Task<IActionResult> AddFilmFromCam(int? id)
+        public async Task<IActionResult> AddFilmFromCam(int? Id)
         {
-            if (id == null || _context.Recipes == null || _context.Cameras == null)
+            if (Id == null || _context.Recipes == null || _context.Cameras == null)
                 return NotFound();
 
             List<Recipe> Recipes = _context.Recipes
@@ -266,7 +270,7 @@ namespace PhotoArchive.Controllers
             if (F == null)
                 return NotFound();
 
-            var C = await _context.Cameras.FindAsync(id);
+            var C = await _context.Cameras.FindAsync(Id);
             if (C == null)
                 return NotFound();
 

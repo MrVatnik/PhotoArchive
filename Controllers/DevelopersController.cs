@@ -133,6 +133,33 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+
+
+            List<Photo> photos = new List<Photo>();
+            List<Film> films = new List<Film>();
+
+            var recipes = _context.Recipes.Where(r => r.DeveloperId == developer.Id).ToList();
+
+            foreach (Recipe recipe in recipes)
+            {
+                if (recipe != null)
+                    films.AddRange(_context.Films.Where(f => f.RecipeId == recipe.Id).ToList());
+            }
+
+            foreach (Film film in films)
+            {
+                if (film != null)
+                {
+                    photos.AddRange(_context.Photos.Where(p => p.FilmId == film.Id).ToList());
+                }
+            }
+
+
+            ViewData["Message"] = "It contains " + recipes.Count + " recipes, " + films.Count + " films, " +
+                photos.Count + " photos in total.";
+
+
+
             return View(developer);
         }
 

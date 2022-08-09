@@ -133,6 +133,31 @@ namespace PhotoArchive.Controllers
                 return NotFound();
             }
 
+            List<Photo> photos = new List<Photo>();
+            List<Film> films = new List<Film>();
+
+            var cameras = _context.Cameras.Where(c => c.FormatId == format.Id).ToList();
+
+            foreach(Camera camera in cameras)
+            {
+                if(camera!=null)
+                    films.AddRange(_context.Films.Where(f => f.CameraId == camera.Id).ToList());
+            }
+
+            foreach (Film film in films)
+            {
+                if (film != null)
+                {
+                    photos.AddRange(_context.Photos.Where(p => p.FilmId == film.Id).ToList());
+                }
+            }
+
+
+            ViewData["Message"] = "It contains " + cameras.Count +" cameras, " + films.Count + " films, " +
+                photos.Count + " photos in total.";
+
+
+
             return View(format);
         }
 
