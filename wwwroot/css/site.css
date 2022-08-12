@@ -34,11 +34,11 @@ body {
 }
 
 .photoBig {
-    width: 700px;
+    width: 1200px;
 }
 
 .photoBig_vertical {
-    height: 700px;
+    height: 1200px;
 }
 
 .itemData {
@@ -92,8 +92,6 @@ body {
 .OneDescenderPic {
     display: flex;
     justify-content: center;
-    //border: groove;
-    //margin: 5px;
     width: 200px;
     height: 140px;
 }
@@ -111,4 +109,20 @@ body {
 .liked_True {
     border: groove;
     border-color:red;
+}
+
+.likePic {
+    width: 50px;
+}
+
+.PageColumn{
+    display:flex;
+    flex-direction:column;
+}
+
+.PageLine {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }

@@ -36,12 +36,12 @@
             </div>
 
             <div class="itemData">
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.Is_Liked)
-                </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.Is_Liked)
+                    <a asp-controller="Photos" asp-action="Like" asp-route-Id="@Model.Id">
+                        <img src="~/Images/Like/@Html.DisplayFor(model => model.Is_LikedString)" alt="no image" class="likePic" />
+                        </a>
                 </dd>
+                
             </div>
 
             <div class="itemData">
@@ -49,7 +49,7 @@
                     @Html.DisplayNameFor(model => model.Page)
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.Page)
+                    <a asp-action="Page" asp-route-Num="@Model.Page">@Html.DisplayFor(model => model.Page)</a>
                 </dd>
             </div>
 

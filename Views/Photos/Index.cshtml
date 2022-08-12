@@ -27,12 +27,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Page)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Line)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Place_In_Line)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -52,13 +46,8 @@
                 @Html.DisplayFor(modelItem => item.Is_Liked)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Page)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Line)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Place_In_Line)
+                <a asp-action="Page" asp-route-Num="@item.Page">@Html.DisplayFor(modelItem => item.Page)</a>
+                
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

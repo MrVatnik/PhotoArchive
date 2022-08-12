@@ -34,6 +34,16 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FolderName)
         </dd>
+        <dt class="col-sm-2">
+            Page(s)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach(int p in ViewBag.Pages)
+            {
+                <a asp-controller="Photos" asp-action="Page" asp-route-Num="@p">#@p</a><text> ; </text>                
+            }
+            
+        </dd>
     </dl>
 </div>
 
@@ -51,12 +61,13 @@
         @foreach (Photo photo in (List<Photo>)ViewBag.Photos)
         {
             <div class="OneDescenderPic">
-                <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData" >
+                <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData" > 
                     <div class="DescenderDesc">
                         <img src="~/Images/Films/Films/@Model.FolderName/@photo.Pic" alt="no image" class="temp liked_@photo.Is_Liked"/>
                     </div>
                 </a>
             </div>
+            
         }
     </div>
 </div>

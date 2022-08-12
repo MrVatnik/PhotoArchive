@@ -1,0 +1,41 @@
+﻿@model IEnumerable<IEnumerable<PhotoArchive.Models.Photo>>
+
+@{
+    ViewData["Title"] = "Page #" + ViewBag.Current;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<!--ИД Важно!!!-->
+<div class="PageColumn" id="PhotoPage">
+    @foreach (var list in Model)
+    {
+        <div class="PageLine">
+            @foreach (var photo in list)
+            {
+                <div class="OneDescenderPic">
+                    <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData">
+                        <div class="DescenderDesc">
+                            <img src="~/Images/Films/Films/@photo.Film.FolderName/@photo.Pic" alt="<img src='~/Images/No_image.JPG'/>" class="temp liked_@photo.Is_Liked" />
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div>
+    
+    @foreach(int pr in ViewBag.Prev)
+    {
+        <a asp-action="Page" asp-route-Num="@pr">@pr</a><text>  </text>
+    }
+
+    <text>   @ViewBag.Current   </text>
+    
+    @foreach(int nex in ViewBag.Next)
+    {
+        <a asp-action="Page" asp-route-Num="@nex">@nex</a><text>  </text>
+    }
+</div>

@@ -22,8 +22,10 @@ namespace PhotoArchive.Controllers
         // GET: FilmTypes
         public async Task<IActionResult> Index()
         {
-              return _context.FilmTypes != null ? 
-                          View(await _context.FilmTypes.ToListAsync()) :
+            List<FilmType> FilmTypes = await _context
+                .FilmTypes.OrderBy(ft => ft.Name).ToListAsync();
+              return FilmTypes != null ? 
+                          View(FilmTypes) :
                           Problem("Entity set 'PhotoContext.FilmTypes'  is null.");
         }
 
