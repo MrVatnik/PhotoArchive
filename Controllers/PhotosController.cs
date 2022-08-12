@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -137,6 +138,7 @@ namespace PhotoArchive.Controllers
                         photo.FilmId = photo.Film.Id;
                         _context.Update(photo);
                         await _context.SaveChangesAsync();
+                        return RedirectToAction("Page", new { Num = photo.Page });
                     }
                     else
                         return NotFound();
@@ -152,7 +154,7 @@ namespace PhotoArchive.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                
             }
 
             List<Film> Films = _context.Films
@@ -261,44 +263,185 @@ namespace PhotoArchive.Controllers
             p.FilmId = p.Film.Id;
 
 
+            int maxPage, maxLine;
+            List<int> pages, lines;
+
+            if (_context.Photos.Where(p => p.Id == Id).Count() != 0)
+            {
+                pages = _context.Photos.Where(p => p.Id == Id).OrderByDescending(p => p.Page).Select(p => p.Page).ToList();
+                maxPage = pages[0];
+                lines = _context.Photos.Where(p => p.Id == Id).Where(p => p.Page == maxPage).OrderByDescending(p => p.Line).Select(p => p.Line).ToList();
+                maxLine = lines[0] + 1;
+            }
+            else
+            {
+                if (_context.Photos.Count() != 0)
+                {
+                    pages = _context.Photos.OrderByDescending(p => p.Page).Select(p => p.Page).ToList();
+
+                    maxPage = pages[0];
+
+                    lines = _context.Photos.Where(p => p.Page == maxPage).OrderByDescending(p => p.Line).Select(p => p.Line).ToList();
+
+                    maxLine = lines[0] + 1;
+                }
+                else
+                {
+                    maxPage = 0;
+                    maxLine = 0;
+                }
+            }
+            ViewBag.maxPage = maxPage;
+            ViewBag.maxLine = maxLine;
+
             ViewData["FilmId"] = new SelectList(Films, "Id", null, p.FilmId);
             return View(p);
         }
 
 
         //POST
-        public async Task<IActionResult> AddToFilmByFiles(int FilmId,int page, List<IFormFile> uploadedFiles)
+        [RequestSizeLimit(1024L * 1024L * 1024L)] //1Gb
+        [RequestFormLimits(MultipartBodyLengthLimit = 1024L * 1024L * 1024L)] //1Gb
+        public async Task<IActionResult> AddToFilmByFiles(int FilmId,int page,int line, List<IFormFile> uploadedFiles)
         {
             
-            if (uploadedFiles.Count() != 0)
+            if (uploadedFiles!=null)
             {
-                foreach (IFormFile uploadedFile in uploadedFiles)
+                if (uploadedFiles.Count() != 0)
                 {
-                    Photo photo = new Photo();
-                    photo.Name = uploadedFile.FileName;
-                    photo.Pic = uploadedFile.FileName;
-                    photo.FilmId = FilmId;
-                    photo.Film = _context.Films.Find(photo.FilmId);
-                    photo.Page=page;
+                    foreach (IFormFile uploadedFile in uploadedFiles)
+                    {
+                        Photo photo = new Photo();
+                        photo.Name = uploadedFile.FileName;
+                        photo.Pic = uploadedFile.FileName;
+                        photo.FilmId = FilmId;
+                        photo.Film = _context.Films.Find(photo.FilmId);
+                        photo.Page = page;
+                        photo.Line = line;
 
-                    _context.Add(photo);
-                    await _context.SaveChangesAsync();
+                        _context.Add(photo);
+                        await _context.SaveChangesAsync();
+                    }
+                    return RedirectToAction("Details", "Films", new { Id = FilmId });
                 }
-                return RedirectToAction("Details", "Films", new { Id = FilmId });
+                else
+                {
+                    List<Film> Films = _context.Films                
+                        .Include(p => p.Camera).Include(p => p.Recipe)                
+                        .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)                
+                        .Include(p => p.Camera.Format)
+                        .ToList();
+                    ViewData["FilmId"] = new SelectList(Films, "Id", null, FilmId);
+                    return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
+                }
             }
             else
             {
                 List<Film> Films = _context.Films
                 .Include(p => p.Camera).Include(p => p.Recipe)
                 .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
-                .Include(p => p.Camera.Format).ToList();
+                .Include(p => p.Camera.Format)
+                .ToList();
                 ViewData["FilmId"] = new SelectList(Films, "Id", null, FilmId);
                 return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
+            }      
+        }
+
+
+        public async Task<IActionResult> Like(int Id)
+        {
+            Photo photo;
+            photo = _context.Photos.Find(Id);
+            try
+            {
+                if (photo != null)
+                {
+                    photo.Is_Liked = !photo.Is_Liked;
+                    _context.Update(photo);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                    return NotFound();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PhotoExists(Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Details", photo);
+        }
+
+
+        public async Task<IActionResult> Page(int Num)
+        {
+            List<Photo> Photos = _context.Photos
+                .Include(p => p.Film)
+                .Include(p => p.Film.Camera).Include(p => p.Film.Recipe)
+                .Include(p => p.Film.Recipe.Developer).Include(p => p.Film.Recipe.FilmType)
+                .Include(p => p.Film.Camera.Format)
+                
+                .Where(p=>p.Page==Num).ToList();
+            Dictionary<int, List<Photo>> PageContentDic = new Dictionary<int, List<Photo>>();
+
+            foreach(Photo p in Photos)
+            {
+                try
+                {
+                    PageContentDic[p.Line].Add(p);
+                }
+                catch (KeyNotFoundException)
+                {
+                    PageContentDic.Add(p.Line, new List<Photo>());
+                    PageContentDic[p.Line].Add(p);
+                }
+            }
+
+            List<List<Photo>> PageContent = new List<List<Photo>>();
+
+            foreach (int key in PageContentDic.Keys)
+            {
+                PageContent.Add(PageContentDic[key].OrderBy(p => p.Place_In_Line).ToList());
             }
 
 
-            
-            
+
+
+
+
+            ViewBag.Current = Num;
+
+            List<int> pages = _context.Photos.Select(p => p.Page).Distinct().ToList();
+            pages.Sort();
+            int CurIndex = pages.FindIndex(i => i == Num);
+
+            List<int> Prev = new List<int>();
+            for (int i = CurIndex - 1; (i >= 0) && (i >= CurIndex - 3); i--)
+            {
+                Prev.Add(pages[i]);
+            }
+
+            List<int> Next = new List<int>();
+            for (int i = CurIndex + 1; (i < pages.Count) && (i <= CurIndex + 3); i++)
+            {
+                Next.Add(pages[i]);
+            }
+
+            Next.Sort();
+            Prev.Sort();
+
+            ViewBag.Next = Next;
+            ViewBag.Prev = Prev;
+
+
+
+
+            return View(PageContent);
         }
     }
 }

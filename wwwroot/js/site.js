@@ -17,10 +17,23 @@ $(window).on('load', function () {
 
 $(window).on('load', function () {
     $('#details img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
+        $(this).removeClass('temp');
         if ($(this).width() / $(this).height() >= 1) {
             $(this).addClass('photoBig');
         } else {
             $(this).addClass('photoBig_vertical');
+        }
+        //$(this).addClass('block');
+    });
+});
+
+
+$(window).on('load', function () {
+    $('#FilmPhotosBlock img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
+        if ($(this).height() < $(this).width()) {
+            $(this).addClass('photo_hor');
+        } else {
+            $(this).addClass('photo_ver_rot');
         }
         $(this).removeClass('temp');
         $(this).addClass('block');
@@ -29,7 +42,7 @@ $(window).on('load', function () {
 
 
 $(window).on('load', function () {
-    $('#FilmPhotosBlock img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
+    $('#PhotoPage img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
         if ($(this).height() < $(this).width()) {
             $(this).addClass('photo_hor');
         } else {

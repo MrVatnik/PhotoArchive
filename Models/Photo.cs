@@ -34,5 +34,15 @@ namespace PhotoArchive.Models
         [DisplayName("Place in Line")]
         public int Place_In_Line { get; set; }
 
+
+        public string Is_LikedString
+        {
+            get
+            {
+                string res = this.Is_Liked + ".png";
+                return res;
+            }
+        }
+
     }
 }

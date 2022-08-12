@@ -26,7 +26,7 @@ namespace PhotoArchive.Controllers
                 .Include(f => f.Camera).Include(f => f.Recipe)
                 .Include(f => f.Recipe.FilmType)
                 .Include(f => f.Recipe.Developer)
-                .Include(f => f.Camera.Format);
+                .Include(f => f.Camera.Format).OrderByDescending(f=>f.Id);
             return View(await photoContext.ToListAsync());
         }
 
@@ -54,6 +54,11 @@ namespace PhotoArchive.Controllers
                 .Where(p=>p.FilmId==film.Id)
                 .OrderBy(p => p.Pic).ToList();
 
+            ViewBag.Pages = _context.Photos
+                .Where(p => p.FilmId == film.Id)
+                .Select(p => p.Page).Distinct()
+                .ToList().OrderBy(p=>p);
+
             return View(film);
         }
 
@@ -69,10 +74,15 @@ namespace PhotoArchive.Controllers
             List<Recipe> Recipes = _context.Recipes
                 .Include(f => f.FilmType)
                 .Include(f => f.Developer)
+                .OrderByDescending(r => _context.Films.Where(f => f.RecipeId == r.Id).Count())
+                .ToList();
+            List<Camera> Cameras = _context.Cameras
+                .Include(c => c.Format)
+                .OrderBy(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
                 .ToList();
 
 
-            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null);
+            ViewData["CameraId"] = new SelectList(Cameras, "Id", null);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null);
             return View();
         }
@@ -96,11 +106,16 @@ namespace PhotoArchive.Controllers
             }
 
             List<Recipe> Recipes = _context.Recipes
-                .Include(f => f.FilmTypeId).Include(f => f.FilmType)
-                .Include(f => f.DeveloperId).Include(f => f.Developer)
+                .Include(f => f.FilmType)
+                .Include(f => f.Developer)
+                .OrderByDescending(r => _context.Films.Where(f => f.RecipeId == r.Id).Count())
+                .ToList();
+            List<Camera> Cameras = _context.Cameras
+                .Include(c => c.Format)
+                .OrderBy(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
                 .ToList();
 
-            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null, film.CameraId);
+            ViewData["CameraId"] = new SelectList(Cameras, "Id", null, film.CameraId);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null, film.RecipeId);
             return View(film);
         }
@@ -122,9 +137,14 @@ namespace PhotoArchive.Controllers
             List<Recipe> Recipes = _context.Recipes
                 .Include(f => f.FilmType)
                 .Include(f => f.Developer)
+                .OrderByDescending(r => _context.Films.Where(f => f.RecipeId == r.Id).Count())
+                .ToList();
+            List<Camera> Cameras = _context.Cameras
+                .Include(c => c.Format)
+                .OrderBy(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
                 .ToList();
 
-            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null, film.CameraId);
+            ViewData["CameraId"] = new SelectList(Cameras, "Id", null, film.CameraId);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null, film.RecipeId);
             return View(film);
         }
@@ -172,9 +192,14 @@ namespace PhotoArchive.Controllers
             List<Recipe> Recipes = _context.Recipes
                 .Include(f => f.FilmType)
                 .Include(f => f.Developer)
+                .OrderByDescending(r => _context.Films.Where(f => f.RecipeId == r.Id).Count())
+                .ToList();
+            List<Camera> Cameras = _context.Cameras
+                .Include(c => c.Format)
+                .OrderBy(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
                 .ToList();
 
-            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null, film.CameraId);
+            ViewData["CameraId"] = new SelectList(Cameras, "Id", null, film.CameraId);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null, film.RecipeId);
             return View(film);
         }
@@ -252,8 +277,14 @@ namespace PhotoArchive.Controllers
             F.Recipe = R;
             F.RecipeId = F.Recipe.Id;
 
+            
+            List<Camera> Cameras = _context.Cameras
+                .Include(c => c.Format)
+                .OrderByDescending(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
+                .ToList();
 
-            ViewData["CameraId"] = new SelectList(_context.Cameras, "Id", null);
+
+            ViewData["CameraId"] = new SelectList(Cameras, "Id", null);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null, F.RecipeId);
             return View(F);
         }
@@ -265,10 +296,7 @@ namespace PhotoArchive.Controllers
             if (Id == null || _context.Recipes == null || _context.Cameras == null)
                 return NotFound();
 
-            List<Recipe> Recipes = _context.Recipes
-                .Include(f => f.FilmType)
-                .Include(f => f.Developer)
-                .ToList();
+            
 
             Film F = new Film();
 
@@ -282,6 +310,12 @@ namespace PhotoArchive.Controllers
             F.Camera = C;
             F.CameraId = F.Camera.Id;
 
+
+            List<Recipe> Recipes = _context.Recipes
+                .Include(f => f.FilmType)
+                .Include(f => f.Developer)
+                .OrderByDescending(r => _context.Films.Where(f => f.RecipeId == r.Id).Count())
+                .ToList();
 
             ViewData["CameraId"] = new SelectList(_context.Cameras, "Id",null, F.CameraId);
             ViewData["RecipeId"] = new SelectList(Recipes, "Id", null);

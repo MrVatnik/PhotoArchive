@@ -11,9 +11,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(
+    options =>
+    {
+        // Set the limit to 1Gb
+        options.BufferBody = true;
+        options.BufferBodyLengthLimit = 1073741824;
+        options.ValueLengthLimit = 134217728;
+        options.MultipartBodyLengthLimit = 1073741824;
+        options.MultipartHeadersCountLimit = 64;
+    }
+
+);
+
 builder.Services.AddDbContext<PhotoContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 var app = builder.Build();
+
+
 
 
 app.UseRequestLocalization(new RequestLocalizationOptions
