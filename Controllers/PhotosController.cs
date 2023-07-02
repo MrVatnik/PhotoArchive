@@ -321,6 +321,9 @@ namespace PhotoArchive.Controllers
 
                         _context.Add(photo);
                         await _context.SaveChangesAsync();
+
+
+                        photo.Miniature();      //to generate a miniature
                     }
                     return RedirectToAction("Details", "Films", new { Id = FilmId });
                 }

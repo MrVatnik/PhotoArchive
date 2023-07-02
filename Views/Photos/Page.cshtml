@@ -17,7 +17,7 @@
                 <div class="OneDescenderPic">
                     <a asp-controller="Photos" asp-action="Details" asp-route-id="@photo.Id" class="DescenderData">
                         <div class="DescenderDesc">
-                            <img src="~/Images/Films/Films/@photo.Film.FolderName/@photo.Pic" alt="<img src='~/Images/No_image.JPG'/>" class="temp liked_@photo.Is_Liked" />
+                            <img src="@photo.Miniature()" alt="<img src='~/Images/No_image.JPG'/>" class="temp liked_@photo.Is_Liked" />
                         </div>
                     </a>
                 </div>

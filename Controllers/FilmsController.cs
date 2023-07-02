@@ -78,7 +78,7 @@ namespace PhotoArchive.Controllers
                 .ToList();
             List<Camera> Cameras = _context.Cameras
                 .Include(c => c.Format)
-                .OrderBy(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
+                .OrderByDescending(c => _context.Films.Where(f => f.CameraId == c.Id).Count())
                 .ToList();
 
 

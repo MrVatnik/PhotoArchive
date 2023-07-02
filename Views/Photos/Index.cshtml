@@ -37,7 +37,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <img src="~/Images/Films/Films/@Html.DisplayFor(modelItem => item.Film.FolderName)/@Html.DisplayFor(modelItem => item.Pic)" alt="no image" class="temp" />
+                    <img src="@item.Miniature()" alt="no image" class="temp" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Film.To_String)
