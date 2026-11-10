@@ -166,6 +166,7 @@ namespace PhotoArchive.Controllers
 
             ViewData["Message"] = "It contains " + cameras.Count +" cameras, " + films.Count + " films, " +
                 photos.Count + " photos in total.";
+            ViewBag.CanDelete = cameras.Count == 0;
 
 
 
@@ -182,6 +183,11 @@ namespace PhotoArchive.Controllers
                 return Problem("Entity set 'PhotoContext.Formats'  is null.");
             }
             var format = await _context.Formats.FindAsync(id);
+            if (format != null && await _context.Cameras.AnyAsync(x => x.FormatId == id))
+            {
+                TempData["DeleteError"] = "It is still used by cameras. Delete or reassign them first.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
             if (format != null)
             {
                 _context.Formats.Remove(format);

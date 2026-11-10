@@ -2,7 +2,7 @@
 
 A personal web app for cataloguing **analog (film) photography**: which film stock was shot in which camera, how it was developed (developer, EI, time) and the scanned frames of each roll, laid out in "album pages".
 
-Built in August 2022 (v1.0, "mostly stable") with a thumbnail generator added in July 2023. Upgraded to .NET 10 in November 2026 (roadmap Phase 1).
+Built in August 2022 (v1.0, "mostly stable") with a thumbnail generator added in July 2023. Upgraded to .NET 10 in November 2026 (roadmap Phase 1), then stabilised: real uploads, background thumbnails, safe deletes (Phase 2).
 
 ## Tech stack
 
@@ -33,20 +33,27 @@ A database created by v1.0 has no migration history. On first start the app dete
 
 ### Where photos live
 
-The app stores only file names in the database. Originals are read from disk:
+The database stores file names; the files themselves live on disk:
 
 ```
-{Storage:OriginalsRoot}/{Film.FolderName}/{Photo.Pic}     → served at /media/originals/...
-{Storage:ThumbnailsRoot}/{Photo.Id}.jpg                    → served at /media/thumbs/...
+{Storage:OriginalsRoot}/{Film.FolderName}/{Photo.Pic}          → /media/originals/{folder}/{file}
+{Storage:ThumbnailsRoot}/thumb/{Photo.Id}_{stamp}.jpg          → /media/photo/{id}/thumb    (175 px)
+{Storage:ThumbnailsRoot}/preview/{Photo.Id}_{stamp}.jpg        → /media/photo/{id}/preview  (2048 px)
 ```
 
-The defaults in `appsettings.json` are `App_Data/films` and `App_Data/thumbnails`; git ignores `App_Data/`. To point at your real archive without committing a machine path, copy `appsettings.Local.example.json` to `appsettings.Local.json` (git ignores it too) and set the path:
+**Film → Add by files** saves the uploaded files into the film's folder (JPEG, PNG or WebP). Files already in the film are skipped, files already in the folder are linked rather than overwritten, and anything that isn't a readable image is rejected.
+
+The defaults in `appsettings.json` are `App_Data/films` and `App_Data/thumbnails`; git ignores `App_Data/`. To point at your real archive without committing a machine path, copy `appsettings.Local.example.json` to `appsettings.Local.json` (git ignores it too) and set the path. Environment variables (`Storage__OriginalsRoot`) still override it:
 
 ```json
 { "Storage": { "OriginalsRoot": "D:\\img\\Films" } }
 ```
 
-A thumbnail is generated the first time a photo is shown. If the original is missing, the page shows a placeholder, and the placeholder is not cached.
+Thumbnails and previews are generated on first request and in the background: after an upload, and for every photo when the app starts (`Storage:WarmUpThumbnailsOnStartup`). The `{stamp}` changes when the original's path, size or date changes, so edited files get fresh thumbnails. If the original is missing, the page shows a placeholder, and the placeholder is not cached.
+
+**Deleting never removes originals.** Deleting a film removes its photo records and cached thumbnails only. Formats, cameras, film types, developers and recipes can't be deleted while something still uses them.
+
+> Upgrading from Phase 1: the old `App_Data/thumbnails/{id}.jpg` files are no longer used and can be deleted (the new cache lives in `thumb/` and `preview/` subfolders).
 
 ### Database migrations
 

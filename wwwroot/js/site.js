@@ -1,54 +1,37 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Images start hidden (class "temp") and get an orientation class once their size is known.
+// Each image is revealed as soon as it has loaded, instead of waiting for the whole page.
 
-// Write your JavaScript code.
+function onImageReady(img, apply) {
+    var done = function () {
+        var landscape = img.naturalWidth >= img.naturalHeight;
+        apply(img, landscape);
+        img.classList.remove('temp');
+    };
+    if (img.complete && img.naturalWidth) {
+        done();
+    } else {
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', function () { img.classList.remove('temp'); }, { once: true });
+    }
+}
 
-$(window).on('load', function () {
-    $('#photoItem img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
-        if ($(this).width() / $(this).height() >= 1) {
-            $(this).addClass('photo');
-        } else {
-            $(this).addClass('photo_vertical');
-        }
-        $(this).removeClass('temp');
-        $(this).addClass('block');
+function setupImages(selector, apply) {
+    document.querySelectorAll(selector).forEach(function (img) { onImageReady(img, apply); });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    setupImages('#photoItem img', function (img, landscape) {
+        img.classList.add(landscape ? 'photo' : 'photo_vertical', 'block');
     });
-});
 
-$(window).on('load', function () {
-    $('#details img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
-        $(this).removeClass('temp');
-        if ($(this).width() / $(this).height() >= 1) {
-            $(this).addClass('photoBig');
-        } else {
-            $(this).addClass('photoBig_vertical');
-        }
-        //$(this).addClass('block');
+    setupImages('#details img', function (img, landscape) {
+        img.classList.add(landscape ? 'photoBig' : 'photoBig_vertical');
     });
-});
 
-
-$(window).on('load', function () {
-    $('#FilmPhotosBlock img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
-        if ($(this).height() < $(this).width()) {
-            $(this).addClass('photo_hor');
-        } else {
-            $(this).addClass('photo_ver_rot');
-        }
-        $(this).removeClass('temp');
-        $(this).addClass('block');
-    });
-});
-
-
-$(window).on('load', function () {
-    $('#PhotoPage img').each(function () { //you need to put this inside the window.onload-function (not document.ready), otherwise the image dimensions won't be available yet
-        if ($(this).height() < $(this).width()) {
-            $(this).addClass('photo_hor');
-        } else {
-            $(this).addClass('photo_ver_rot');
-        }
-        $(this).removeClass('temp');
-        $(this).addClass('block');
-    });
+    // gallery thumbnails: portrait frames are rotated so every frame in a line has the same height
+    var thumbs = function (img, landscape) {
+        img.classList.add(img.naturalHeight < img.naturalWidth ? 'photo_hor' : 'photo_ver_rot', 'block');
+    };
+    setupImages('#FilmPhotosBlock img', thumbs);
+    setupImages('#PhotoPage img', thumbs);
 });

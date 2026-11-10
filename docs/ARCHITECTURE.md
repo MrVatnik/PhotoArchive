@@ -7,7 +7,10 @@ PhotoArchive is a single-project ASP.NET Core MVC application (`PhotoArchive.csp
 ```
 Browser ──► Controllers (7) ──► PhotoContext (EF Core) ──► SQL Server LocalDB
                │
-               └──► Razor Views ──► IPhotoFileService ──► Storage:OriginalsRoot / ThumbnailsRoot (disk)
+               └──► Razor Views (URLs only)
+
+MediaController  /media/photo/{id}/{thumb|preview} ──► IPhotoFileService ──► Storage:OriginalsRoot / ThumbnailsRoot (disk)
+ThumbnailQueue   (BackgroundService: uploads + startup warm-up) ──┘
 ```
 
 | Folder               | Contents |
@@ -17,7 +20,7 @@ Browser ──► Controllers (7) ──► PhotoContext (EF Core) ──► SQL
 | `Data/DatabaseInitializer.cs` | Marks the baseline migration as applied for v1.0 databases, then runs `Migrate()` |
 | `Migrations/`        | EF Core migrations (`InitialCreate` is the v1.0 schema) |
 | `Models/`            | Entities |
-| `Services/`          | `StorageOptions` (config) and `PhotoFileService` (file URLs and thumbnails) |
+| `Services/`          | `StorageOptions` (config), `PhotoFileService` (file URLs, uploads, thumbnails/previews), `ThumbnailQueue` (background rendering) |
 | `Controllers/`       | One controller per entity, scaffolded CRUD plus custom actions |
 | `Views/`             | Razor views per controller, plus `Shared/_Layout.cshtml` |
 | `wwwroot/js/site.js` | jQuery that sets image orientation classes after load |
@@ -37,35 +40,36 @@ All controllers have the scaffolded `Index / Details / Create / Edit / Delete` a
 |------------|---------------|---------|
 | `FilmsController` | `AddFilmFromRec(id)`, `AddFilmFromCam(id)` | Create a film with the recipe or camera preselected. Dropdowns are sorted by usage count |
 | `PhotosController` | `AddPhotoToFilm(id)` | Create a single photo inside a film |
-| | `AddToFilmByFile(id)` (GET) / `AddToFilmByFiles` (POST) | Bulk-create photos from a multi-file picker. **Only file names are saved**, not the files themselves |
-| | `Like(id)` | Toggle `Is_Liked` (GET request) |
-| | `Page(num)` | Album page view: photos grouped by `Line`, ordered by `Place_In_Line`, links to ±3 neighbouring pages |
+| | `AddToFilmByFile(id)` (GET) / `AddToFilmByFiles` (POST) | Bulk upload into a film: suggests the next free page and line, saves files to the film's folder, numbers `Place_In_Line` by file name, skips duplicates and non-images, queues thumbnails |
+| | `Like(id)` | Toggle `Is_Liked` (POST with antiforgery token) |
+| | `Page(num)` | Album page view: lines sorted by number, photos by `Place_In_Line` (then file name), links to ±3 neighbouring pages |
+| `MediaController` | `Photo(id, kind)` | Serves `/media/photo/{id}/thumb` and `/preview`, rendering on a cache miss. ETag/304 support; the placeholder is sent with `no-store` |
+| `HomeController` | `Index`, `Error` | `/` redirects to Films; `Error` is the production exception page |
 | `CamerasController` | `AddCamFromFormat(id)` | Create a camera from a format |
 | `RecipesController` | `AddRecFromDev(id)`, `AddRecFromFT(id)` | Create a recipe from a developer or film type |
-| All parents | `Delete` GET | Shows how many descendants will be removed ("It contains N films, M photos") |
+| All parents | `Delete` GET/POST | Shows the descendant counts. Reference data (Format, Camera, FilmType, Developer, Recipe) can only be deleted when nothing uses it; deleting a Film removes its photo records |
 
 The parent `Details` pages list their children (for example, Film details show the photo grid and page links).
 
 ## Image pipeline
 
-1. The originals are copied manually to `{Storage:OriginalsRoot}/{FolderName}/{Pic}`. The upload stores only file names (roadmap Phase 2 fixes this).
-2. Views call `PhotoFiles.ThumbnailUrl(photo)`. `IPhotoFileService` is injected into every view through `_ViewImports.cshtml`:
-   - if `{ThumbnailsRoot}/{Id}.jpg` exists, it returns `/media/thumbs/{Id}.jpg`;
-   - otherwise it decodes the original with SkiaSharp, resizes it to `Storage:ThumbnailSize` (175 px) on the longest side, writes the JPEG atomically (temp file, then rename) and returns the URL;
-   - if the original is missing or unreadable, it returns `/images/No_image.JPG` **without caching it**.
-3. `Photos/Details` shows the original via `PhotoFiles.OriginalUrl(photo)`, and clicking it opens the full-size image in a new tab. The URL returns `/media/originals/{folder}/{file}` with each segment URL-encoded.
-4. File paths are checked to stay inside `OriginalsRoot`, so a crafted `FolderName` or `Pic` can't read other files.
-5. `site.js` adds `photo_hor` or `photo_ver_rot` classes based on the rendered aspect ratio.
+1. **Originals** reach `{Storage:OriginalsRoot}/{FolderName}/{Pic}` by upload (`SaveOriginalAsync`: streamed to a temp file, checked to be a decodable JPEG/PNG/WebP, then renamed; never overwrites) or by copying them in by hand.
+2. **Views only emit URLs** (`PhotoFiles.ThumbnailUrl/PreviewUrl/OriginalUrl`, injected through `_ViewImports.cshtml`), so a page renders instantly whatever the cache state.
+3. **`MediaController`** handles `/media/photo/{id}/thumb|preview`. `GetOrCreateAsync` looks for `{ThumbnailsRoot}/{kind}/{id}_{stamp}.jpg`, where `stamp` hashes the kind, size, relative path, file length and modification time. On a miss it renders with SkiaSharp: scaled JPEG decode, Mitchell resize (175 px thumb, 2048 px preview, never upscaled), EXIF 90/180/270° rotation, atomic write, and removal of stale stamps. A striped lock stops two requests from rendering the same photo.
+4. **`ThumbnailQueue`** (a `Channel` plus `BackgroundService`) renders thumbnails after uploads and, on startup, for every photo, so galleries are normally served straight from the cache.
+5. A missing or unreadable original gives `/images/No_image.JPG` with `Cache-Control: no-store`, so nothing is cached.
+6. All paths are checked to stay inside `OriginalsRoot`, so a crafted `FolderName` or `Pic` can't reach other files.
+7. `site.js` reveals each image (`.temp` → visible) as soon as it loads and adds `photo_hor` / `photo_ver_rot` / `photoBig*` classes from its natural size.
+8. Deleting photos or films removes cached renditions only; **originals are never deleted by the app**.
 
 ## Configuration
 
 - Connection string `DefaultConnection` in `appsettings.json` points to `(localdb)\mssqllocaldb`, database `PhotoArchiveDB`. The SQL Server compatibility level is pinned to 150 (SQL Server 2019 / LocalDB).
-- The `Storage` section holds `OriginalsRoot`, `ThumbnailsRoot` and `ThumbnailSize`. Relative paths resolve against the content root. Override them per machine in the git-ignored `appsettings.Local.json` (see `appsettings.Local.example.json`).
-- Forms buffer up to 1 GB in memory (`FormOptions.BufferBody = true`).
+- The `Storage` section holds `OriginalsRoot`, `ThumbnailsRoot`, `ThumbnailSize`, `PreviewSize` and `WarmUpThumbnailsOnStartup`. Relative paths resolve against the content root. Override them per machine in the git-ignored `appsettings.Local.json` (see `appsettings.Local.example.json`).
+- Uploads are limited to 1 GB per request and aren't buffered in memory; ASP.NET spools large files to temp files.
 - Culture is fixed to en-US, so decimals use `.` (this matters for ISO and EI).
 
 ## What's missing structurally
 
 - No authentication or authorisation, although `UseAuthorization` is called.
-- No `HomeController`, so the error handler `/Home/Error` and the footer link "Privacy" are broken.
 - No tests and no CI.

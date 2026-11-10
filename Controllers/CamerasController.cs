@@ -162,6 +162,7 @@ namespace PhotoArchive.Controllers
 
             ViewData["Message"] = "It contains " + films.Count + " films, " +
                 photos.Count + " photos in total.";
+            ViewBag.CanDelete = films.Count == 0;
 
 
             return View(camera);
@@ -177,6 +178,11 @@ namespace PhotoArchive.Controllers
                 return Problem("Entity set 'PhotoContext.Cameras'  is null.");
             }
             var camera = await _context.Cameras.FindAsync(id);
+            if (camera != null && await _context.Films.AnyAsync(x => x.CameraId == id))
+            {
+                TempData["DeleteError"] = "It is still used by films. Delete or reassign them first.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
             if (camera != null)
             {
                 _context.Cameras.Remove(camera);

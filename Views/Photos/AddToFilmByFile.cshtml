@@ -6,6 +6,11 @@
 
 <h1>@ViewData["Title"]</h1>
 
+@if (TempData["UploadResult"] is string uploadResult)
+{
+    <div class="alert alert-warning">@uploadResult</div>
+}
+
 <h4>Photo</h4>
 <hr />
 <div class="row">
@@ -30,7 +35,11 @@
                 <input asp-for="Line" class="form-control" value="@ViewBag.maxLine"/>
             </div>
             <div class="form-group">
-                <input type="file" name="uploadedFiles" multiple> <!--multiple-->
+                <input type="file" name="uploadedFiles" accept="@ViewBag.Accept" multiple>
+                <small class="form-text text-muted">
+                    Files are saved to the film's folder (@Model.Film?.FolderName). Supported: @ViewBag.Accept.
+                    Files already in this film are skipped; files already in the folder are linked, not overwritten.
+                </small>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

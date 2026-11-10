@@ -16,11 +16,13 @@ namespace PhotoArchive.Controllers
     {
         private readonly PhotoContext _context;
         private readonly IPhotoFileService _photoFiles;
+        private readonly IThumbnailQueue _thumbnails;
 
-        public PhotosController(PhotoContext context, IPhotoFileService photoFiles)
+        public PhotosController(PhotoContext context, IPhotoFileService photoFiles, IThumbnailQueue thumbnails)
         {
             _context = context;
             _photoFiles = photoFiles;
+            _thumbnails = thumbnails;
         }
 
         // GET: Photos
@@ -201,8 +203,9 @@ namespace PhotoArchive.Controllers
             {
                 _context.Photos.Remove(photo);
             }
-            
+
             await _context.SaveChangesAsync();
+            _photoFiles.DeleteCached(id); // the original file on disk is kept
             return RedirectToAction(nameof(Index));
         }
 
@@ -266,36 +269,19 @@ namespace PhotoArchive.Controllers
             p.FilmId = p.Film.Id;
 
 
-            int maxPage, maxLine;
-            List<int> pages, lines;
-
-            if (_context.Photos.Where(p => p.Id == Id).Count() != 0)
+            // Suggest the next free line: on this film's last page if it already has photos,
+            // otherwise on the last page of the archive.
+            int maxPage = 0, maxLine = 0;
+            var filmPages = _context.Photos.Where(ph => ph.FilmId == F.Id).Select(ph => (int?)ph.Page);
+            int? page = await filmPages.MaxAsync() ?? await _context.Photos.Select(ph => (int?)ph.Page).MaxAsync();
+            if (page != null)
             {
-                pages = _context.Photos.Where(p => p.Id == Id).OrderByDescending(p => p.Page).Select(p => p.Page).ToList();
-                maxPage = pages[0];
-                lines = _context.Photos.Where(p => p.Id == Id).Where(p => p.Page == maxPage).OrderByDescending(p => p.Line).Select(p => p.Line).ToList();
-                maxLine = lines[0] + 1;
-            }
-            else
-            {
-                if (_context.Photos.Count() != 0)
-                {
-                    pages = _context.Photos.OrderByDescending(p => p.Page).Select(p => p.Page).ToList();
-
-                    maxPage = pages[0];
-
-                    lines = _context.Photos.Where(p => p.Page == maxPage).OrderByDescending(p => p.Line).Select(p => p.Line).ToList();
-
-                    maxLine = lines[0] + 1;
-                }
-                else
-                {
-                    maxPage = 0;
-                    maxLine = 0;
-                }
+                maxPage = page.Value;
+                maxLine = (await _context.Photos.Where(ph => ph.Page == maxPage).MaxAsync(ph => (int?)ph.Line) ?? -1) + 1;
             }
             ViewBag.maxPage = maxPage;
             ViewBag.maxLine = maxLine;
+            ViewBag.Accept = string.Join(",", _photoFiles.SupportedExtensions);
 
             ViewData["FilmId"] = new SelectList(Films, "Id", null, p.FilmId);
             return View(p);
@@ -303,57 +289,79 @@ namespace PhotoArchive.Controllers
 
 
         //POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [RequestSizeLimit(1024L * 1024L * 1024L)] //1Gb
         [RequestFormLimits(MultipartBodyLengthLimit = 1024L * 1024L * 1024L)] //1Gb
-        public async Task<IActionResult> AddToFilmByFiles(int FilmId,int page,int line, List<IFormFile> uploadedFiles)
+        public async Task<IActionResult> AddToFilmByFiles(int FilmId, int page, int line, List<IFormFile> uploadedFiles, CancellationToken ct)
         {
-            
-            if (uploadedFiles!=null)
+            var film = await _context.Films.FindAsync(FilmId);
+            if (film == null)
+                return NotFound();
+
+            if (uploadedFiles == null || uploadedFiles.Count == 0)
             {
-                if (uploadedFiles.Count() != 0)
-                {
-                    foreach (IFormFile uploadedFile in uploadedFiles)
-                    {
-                        Photo photo = new Photo();
-                        photo.Name = uploadedFile.FileName;
-                        photo.Pic = uploadedFile.FileName;
-                        photo.FilmId = FilmId;
-                        photo.Film = _context.Films.Find(photo.FilmId);
-                        photo.Page = page;
-                        photo.Line = line;
-
-                        _context.Add(photo);
-                        await _context.SaveChangesAsync();
-
-
-                        _photoFiles.EnsureThumbnail(photo);
-                    }
-                    return RedirectToAction("Details", "Films", new { Id = FilmId });
-                }
-                else
-                {
-                    List<Film> Films = _context.Films                
-                        .Include(p => p.Camera).Include(p => p.Recipe)                
-                        .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)                
-                        .Include(p => p.Camera.Format)
-                        .ToList();
-                    ViewData["FilmId"] = new SelectList(Films, "Id", null, FilmId);
-                    return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
-                }
-            }
-            else
-            {
-                List<Film> Films = _context.Films
-                .Include(p => p.Camera).Include(p => p.Recipe)
-                .Include(p => p.Recipe.Developer).Include(p => p.Recipe.FilmType)
-                .Include(p => p.Camera.Format)
-                .ToList();
-                ViewData["FilmId"] = new SelectList(Films, "Id", null, FilmId);
+                TempData["UploadResult"] = "No files were selected.";
                 return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
-            }      
+            }
+
+            var existing = (await _context.Photos.Where(p => p.FilmId == FilmId).Select(p => p.Pic).ToListAsync(ct))
+                .Where(n => n != null).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var place = (await _context.Photos.Where(p => p.Page == page && p.Line == line)
+                .MaxAsync(p => (int?)p.Place_In_Line, ct) ?? -1) + 1;
+
+            var added = new List<Photo>();
+            var skipped = new List<string>();
+            foreach (var file in uploadedFiles.OrderBy(f => f.FileName, StringComparer.OrdinalIgnoreCase))
+            {
+                var name = Path.GetFileName(file.FileName);
+                if (existing.Contains(name))
+                {
+                    skipped.Add(name + " (already in this film)");
+                    continue;
+                }
+
+                var outcome = await _photoFiles.SaveOriginalAsync(film, file, ct);
+                switch (outcome)
+                {
+                    case UploadOutcome.UnsupportedType:
+                        skipped.Add(name + " (unsupported type)");
+                        continue;
+                    case UploadOutcome.NotAnImage:
+                        skipped.Add(name + " (not a readable image)");
+                        continue;
+                    case UploadOutcome.InvalidFolder:
+                        TempData["UploadResult"] = $"Film folder name \"{film.FolderName}\" is not valid. Fix it on the film's Edit page.";
+                        return RedirectToAction("AddToFilmByFile", new { Id = FilmId });
+                }
+
+                // Saved, or AlreadyOnDisk (copied in by hand earlier): either way the file is there, link it
+                var photo = new Photo
+                {
+                    Name = name,
+                    Pic = name,
+                    FilmId = FilmId,
+                    Page = page,
+                    Line = line,
+                    Place_In_Line = place++
+                };
+                _context.Add(photo);
+                added.Add(photo);
+                existing.Add(name);
+            }
+
+            await _context.SaveChangesAsync(ct);
+            foreach (var photo in added)
+                _thumbnails.Enqueue(photo.Id);
+
+            TempData["UploadResult"] = $"Added {added.Count} photo(s)."
+                + (skipped.Count > 0 ? $" Skipped {skipped.Count}: {string.Join(", ", skipped)}." : "");
+            return RedirectToAction("Details", "Films", new { Id = FilmId });
         }
 
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Like(int Id)
         {
             Photo photo;
@@ -380,7 +388,7 @@ namespace PhotoArchive.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("Details", photo);
+            return RedirectToAction("Details", new { id = Id });
         }
 
 
@@ -410,9 +418,11 @@ namespace PhotoArchive.Controllers
 
             List<List<Photo>> PageContent = new List<List<Photo>>();
 
-            foreach (int key in PageContentDic.Keys)
+            foreach (int key in PageContentDic.Keys.OrderBy(k => k))
             {
-                PageContent.Add(PageContentDic[key].OrderBy(p => p.Place_In_Line).ToList());
+                PageContent.Add(PageContentDic[key]
+                    .OrderBy(p => p.Place_In_Line).ThenBy(p => p.Pic).ThenBy(p => p.Id)
+                    .ToList());
             }
 
 

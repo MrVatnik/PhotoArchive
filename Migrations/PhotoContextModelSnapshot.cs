@@ -209,7 +209,7 @@ namespace PhotoArchive.Migrations
                     b.HasOne("PhotoArchive.Models.Format", "Format")
                         .WithMany()
                         .HasForeignKey("FormatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Format");
@@ -220,13 +220,13 @@ namespace PhotoArchive.Migrations
                     b.HasOne("PhotoArchive.Models.Camera", "Camera")
                         .WithMany()
                         .HasForeignKey("CameraId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PhotoArchive.Models.Recipe", "Recipe")
                         .WithMany()
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Camera");
@@ -250,13 +250,13 @@ namespace PhotoArchive.Migrations
                     b.HasOne("PhotoArchive.Models.Developer", "Developer")
                         .WithMany()
                         .HasForeignKey("DeveloperId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PhotoArchive.Models.FilmType", "FilmType")
                         .WithMany()
                         .HasForeignKey("FilmTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Developer");

@@ -29,7 +29,11 @@ Do this before fixing bugs. It's mechanical, and every later fix then lands on t
 
 **Exit criterion:** the app runs on .NET 10 on Windows *and* in a Linux container, with existing data intact.
 
-## Phase 2: Stabilise (2–3 days)
+## Phase 2: Stabilise ✅ done (Nov 2026)
+
+> Done: real streaming uploads with validation; on-demand thumbnail (175 px) and preview (2048 px) endpoint with self-invalidating cache and ETags; background queue with startup warm-up; page/line fixes; `HomeController`; POST + antiforgery for Like and upload; Restrict deletes (migration `RestrictReferenceDeletes`). Verified with an end-to-end script against a copy of the 2023 backup.
+>
+> Deviations from the plan below: (a) deleting a film **keeps the original files**, because `OriginalsRoot` is the photographer's real archive (most folders there aren't in the database); only cached renditions are removed. (b) `Like` is a plain POST form (works without JS) rather than `fetch()`. (c) Thumbnails and previews are served from `/media/photo/{id}/thumb|preview` instead of `/thumb/{id}?size=`.
 
 Fix the bugs in KNOWN_ISSUES.md, in this order:
 

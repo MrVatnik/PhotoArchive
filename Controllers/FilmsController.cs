@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PhotoArchive.Data;
 using PhotoArchive.Models;
+using PhotoArchive.Services;
 
 namespace PhotoArchive.Controllers
 {
     public class FilmsController : Controller
     {
         private readonly PhotoContext _context;
+        private readonly IPhotoFileService _photoFiles;
 
-        public FilmsController(PhotoContext context)
+        public FilmsController(PhotoContext context, IPhotoFileService photoFiles)
         {
             _context = context;
+            _photoFiles = photoFiles;
         }
 
         // GET: Films
@@ -238,12 +241,16 @@ namespace PhotoArchive.Controllers
                 return Problem("Entity set 'PhotoContext.Films'  is null.");
             }
             var film = await _context.Films.FindAsync(Id);
+            var photoIds = new List<int>();
             if (film != null)
             {
-                _context.Films.Remove(film);
+                photoIds = await _context.Photos.Where(p => p.FilmId == film.Id).Select(p => p.Id).ToListAsync();
+                _context.Films.Remove(film); // photo records cascade; original files on disk are kept
             }
             
             await _context.SaveChangesAsync();
+            foreach (var photoId in photoIds)
+                _photoFiles.DeleteCached(photoId);
             return RedirectToAction(nameof(Index));
         }
 
