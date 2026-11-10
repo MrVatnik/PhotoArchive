@@ -13,7 +13,10 @@
     <dl>
         <div class="DataBlock">
             <dd class="itemData">
-                <img src="~/Images/Films/Films/@Html.DisplayFor(model => model.Film.FolderName)/@Html.DisplayFor(model => model.Pic)" alt="no image" class="temp" />
+                @{ var originalUrl = PhotoFiles.OriginalUrl(Model); }
+                <a href="@originalUrl" target="_blank" title="Open full size">
+                    <img src="@originalUrl" alt="no image" class="temp" />
+                </a>
             </dd>
         </div>
         <div class="DataBlock">
@@ -38,7 +41,7 @@
             <div class="itemData">
                 <dd class="col-sm-10">
                     <a asp-controller="Photos" asp-action="Like" asp-route-Id="@Model.Id">
-                        <img src="~/Images/Like/@Html.DisplayFor(model => model.Is_LikedString)" alt="no image" class="likePic" />
+                        <img src="~/images/Like/@Html.DisplayFor(model => model.Is_LikedString)" alt="no image" class="likePic" />
                         </a>
                 </dd>
                 

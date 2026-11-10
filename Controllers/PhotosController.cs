@@ -8,16 +8,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PhotoArchive.Data;
 using PhotoArchive.Models;
+using PhotoArchive.Services;
 
 namespace PhotoArchive.Controllers
 {
     public class PhotosController : Controller
     {
         private readonly PhotoContext _context;
+        private readonly IPhotoFileService _photoFiles;
 
-        public PhotosController(PhotoContext context)
+        public PhotosController(PhotoContext context, IPhotoFileService photoFiles)
         {
             _context = context;
+            _photoFiles = photoFiles;
         }
 
         // GET: Photos
@@ -323,7 +326,7 @@ namespace PhotoArchive.Controllers
                         await _context.SaveChangesAsync();
 
 
-                        photo.Miniature();      //to generate a miniature
+                        _photoFiles.EnsureThumbnail(photo);
                     }
                     return RedirectToAction("Details", "Films", new { Id = FilmId });
                 }

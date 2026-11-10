@@ -16,8 +16,9 @@ namespace PhotoArchive.Data
 
         public PhotoContext(DbContextOptions<PhotoContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            // Schema is managed by migrations, applied at startup (see DatabaseInitializer).
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Photo>().ToTable("Photos");
@@ -27,6 +28,10 @@ namespace PhotoArchive.Data
             modelBuilder.Entity<Recipe>().ToTable("Recipes");
             modelBuilder.Entity<Camera>().ToTable("Cameras");
             modelBuilder.Entity<Format>().ToTable("Formats");
+
+            // Same as the v1.0 schema (decimal(18,2)); explicit to avoid the EF precision warning.
+            modelBuilder.Entity<FilmType>().Property(f => f.ISO).HasPrecision(18, 2);
+            modelBuilder.Entity<Recipe>().Property(r => r.EI).HasPrecision(18, 2);
         }
     }
 }
