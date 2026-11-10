@@ -29,6 +29,15 @@ namespace PhotoArchive.Data
             modelBuilder.Entity<Camera>().ToTable("Cameras");
             modelBuilder.Entity<Format>().ToTable("Formats");
 
+            // Reference data can't be deleted while something still uses it (no silent subtree deletes).
+            // Only Film -> Photos cascades: deleting a film removes its photo records (files on disk are kept).
+            modelBuilder.Entity<Camera>().HasOne(c => c.Format).WithMany().HasForeignKey(c => c.FormatId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Film>().HasOne(f => f.Camera).WithMany().HasForeignKey(f => f.CameraId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Film>().HasOne(f => f.Recipe).WithMany().HasForeignKey(f => f.RecipeId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Recipe>().HasOne(r => r.FilmType).WithMany().HasForeignKey(r => r.FilmTypeId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Recipe>().HasOne(r => r.Developer).WithMany().HasForeignKey(r => r.DeveloperId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Photo>().HasOne(p => p.Film).WithMany().HasForeignKey(p => p.FilmId).OnDelete(DeleteBehavior.Cascade);
+
             // Same as the v1.0 schema (decimal(18,2)); explicit to avoid the EF precision warning.
             modelBuilder.Entity<FilmType>().Property(f => f.ISO).HasPrecision(18, 2);
             modelBuilder.Entity<Recipe>().Property(r => r.EI).HasPrecision(18, 2);

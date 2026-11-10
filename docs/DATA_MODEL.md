@@ -10,7 +10,7 @@ erDiagram
     Film      ||--o{ Photo  : "contains"
 ```
 
-All foreign keys are non-nullable `int`s, so EF Core configures them as **required with cascade delete**.
+All foreign keys are non-nullable `int`s. Since Phase 2 (migration `RestrictReferenceDeletes`), only Film → Photo cascades; every other relation is **Restrict**.
 
 ## Entities
 
@@ -38,18 +38,23 @@ Page 3
 
 Pages are global across films, so one film can span several pages and one page can hold several films. Bulk upload puts every file on the same page and line it was given, with `Place_In_Line = 0`.
 
-## Cascade deletes (be careful)
+## Delete rules
 
-Deleting a parent removes **everything below it**:
+| Deleting… | Allowed when | Effect |
+|-----------|--------------|--------|
+| Format | no cameras use it | — |
+| Camera | no films use it | — |
+| FilmType / Developer | no recipes use it | — |
+| Recipe | no films use it | — |
+| Film | always | its Photo records are deleted (cascade) along with their cached thumbnails |
+| Photo | always | its cached thumbnails are deleted |
 
-- Format → Cameras → Films → Photos
-- FilmType or Developer → Recipes → Films → Photos
-- Film → Photos
+The Delete page hides the button and explains why when something is still in use, and the POST action checks again. **Original files on disk are never deleted by the app.**
 
-The Delete confirmation page shows the counts, but **the files on disk (originals and miniatures) are never removed**.
+Before Phase 2, every relation cascaded, so deleting a Format silently removed its cameras, films and photos.
 
 ## Notes
 
 - `Photo.Date` is commented out. Dates live only on `Film`.
 - Navigation properties are nullable (`Format?`, `Film?` and so on), which causes most of the nullable warnings in the build.
-- There is no unique constraint anywhere. For example, the same file name can be added twice to one film.
+- There is no unique constraint in the database. The bulk upload skips file names already in the film, but the single-photo Create and Edit forms don't check.

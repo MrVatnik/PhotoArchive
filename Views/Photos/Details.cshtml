@@ -13,9 +13,8 @@
     <dl>
         <div class="DataBlock">
             <dd class="itemData">
-                @{ var originalUrl = PhotoFiles.OriginalUrl(Model); }
-                <a href="@originalUrl" target="_blank" title="Open full size">
-                    <img src="@originalUrl" alt="no image" class="temp" />
+                <a href="@PhotoFiles.OriginalUrl(Model)" target="_blank" title="Open full size original">
+                    <img src="@PhotoFiles.PreviewUrl(Model)" alt="no image" class="temp" />
                 </a>
             </dd>
         </div>
@@ -40,9 +39,11 @@
 
             <div class="itemData">
                 <dd class="col-sm-10">
-                    <a asp-controller="Photos" asp-action="Like" asp-route-Id="@Model.Id">
-                        <img src="~/images/Like/@Html.DisplayFor(model => model.Is_LikedString)" alt="no image" class="likePic" />
-                        </a>
+                    <form asp-controller="Photos" asp-action="Like" asp-route-Id="@Model.Id" method="post">
+                        <button type="submit" class="btn btn-link p-0" title="Like / unlike">
+                            <img src="~/images/Like/@Html.DisplayFor(model => model.Is_LikedString)" alt="like" class="likePic" />
+                        </button>
+                    </form>
                 </dd>
                 
             </div>

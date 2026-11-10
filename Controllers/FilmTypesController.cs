@@ -161,6 +161,7 @@ namespace PhotoArchive.Controllers
 
             ViewData["Message"] = "It contains " + recipes.Count + " recipes, " + films.Count + " films, " +
                 photos.Count + " photos in total.";
+            ViewBag.CanDelete = recipes.Count == 0;
 
 
 
@@ -177,6 +178,11 @@ namespace PhotoArchive.Controllers
                 return Problem("Entity set 'PhotoContext.FilmTypes'  is null.");
             }
             var filmType = await _context.FilmTypes.FindAsync(id);
+            if (filmType != null && await _context.Recipes.AnyAsync(x => x.FilmTypeId == id))
+            {
+                TempData["DeleteError"] = "It is still used by recipes. Delete or reassign them first.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
             if (filmType != null)
             {
                 _context.FilmTypes.Remove(filmType);

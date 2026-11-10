@@ -6,6 +6,11 @@
 
 <h1>@ViewData["Title"]</h1>
 
+@if (TempData["UploadResult"] is string uploadResult)
+{
+    <div class="alert alert-info">@uploadResult</div>
+}
+
 <div>
     <h4>Film</h4>
     <hr />

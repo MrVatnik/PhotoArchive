@@ -24,7 +24,14 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        @if (ViewBag.CanDelete == false)
+        {
+            <div class="alert alert-warning">@(TempData["DeleteError"] ?? "It can't be deleted while it is still in use. Delete or reassign the items above first.")</div>
+        }
+        else
+        {
+            <input type="submit" value="Delete" class="btn btn-danger" /> <text>|</text>
+        }
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
