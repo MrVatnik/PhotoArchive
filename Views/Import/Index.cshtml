@@ -1,0 +1,162 @@
+@using PhotoArchive.Services.Import
+@model ScanResult
+
+@{
+    ViewData["Title"] = "Import rolls";
+    var rows = Model.Candidates;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="text-muted">
+    Roll folders in the archive that aren't in the database yet, pre-filled from the folder name,
+    <code>Пленка+Аппарат.txt</code> and the album index. Check each row, fix what's wrong, then import.
+    Missing cameras, formats, film types, developers and recipes are created; files are never moved or renamed.
+</p>
+
+@if (TempData["ImportResult"] is string importResult)
+{
+    <div class="alert alert-success">@importResult</div>
+}
+@if (TempData["ImportErrors"] is string importErrors)
+{
+    <div class="alert alert-danger" style="white-space: pre-line">@importErrors</div>
+}
+@if (Model.AlbumIndexStatus != null)
+{
+    <p class="small text-muted">@Model.AlbumIndexStatus</p>
+}
+
+@if (rows.Count == 0)
+{
+    <div class="alert alert-info">Every roll folder is already in the database.</div>
+}
+else
+{
+    <datalist id="cameras">@foreach (var x in (List<string>)ViewBag.Cameras) { <option value="@x"></option> }</datalist>
+    <datalist id="formats">@foreach (var x in (List<string>)ViewBag.Formats) { <option value="@x"></option> }</datalist>
+    <datalist id="stocks">@foreach (var x in (List<string>)ViewBag.Stocks) { <option value="@x"></option> }</datalist>
+    <datalist id="developers">@foreach (var x in (List<string>)ViewBag.Developers) { <option value="@x"></option> }</datalist>
+
+    <form asp-action="Index" method="post">
+        <div class="mb-2">
+            <button type="submit" class="btn btn-primary">Import selected</button>
+            <span class="ms-2 text-muted"><span id="selectedCount">@rows.Count(r => r.Include)</span> of @rows.Count selected</span>
+            <button type="button" class="btn btn-link btn-sm" onclick="toggleAll(true)">select all</button>
+            <button type="button" class="btn btn-link btn-sm" onclick="toggleAll(false)">select none</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-top import-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Folder</th>
+                        <th>Date</th>
+                        <th title="Colour roll">Col</th>
+                        <th>Camera / format</th>
+                        <th>Film stock</th>
+                        <th>ISO</th>
+                        <th>EI</th>
+                        <th>Developer</th>
+                        <th title="Album page and line where the roll starts; 0 = not in the album">Page / line</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < rows.Count; i++)
+                    {
+                        var r = rows[i];
+                        <tr class="@(r.Warnings.Count > 0 ? "table-warning" : "")">
+                            <td>
+                                <input type="checkbox" name="rows[@i].Include" value="true" class="form-check-input row-include" @(r.Include ? "checked" : "") @(r.ImageFolder == null ? "disabled" : "") />
+                                <input type="hidden" name="rows[@i].Include" value="false" />
+                                <input type="hidden" name="rows[@i].Folder" value="@r.Folder" />
+                                <input type="hidden" name="rows[@i].ImageFolder" value="@r.ImageFolder" />
+                            </td>
+                            <td class="folder-cell">
+                                <strong>@r.Folder</strong>
+                                <div class="small text-muted">
+                                    @if (r.ImageFolder == null)
+                                    {
+                                        <text>no images</text>
+                                    }
+                                    else
+                                    {
+                                        @r.ImageCount <text> images</text>
+                                        @if (r.ImageFolder != r.Folder)
+                                        {
+                                            <text> in </text><code>@r.ImageFolder.Substring(r.Folder.Length)</code>
+                                        }
+                                    }
+                                </div>
+                                @if (r.RawText != null)
+                                {
+                                    <div class="small fst-italic" title="Пленка+Аппарат.txt">“@r.RawText”</div>
+                                }
+                                @foreach (var n in r.Notes)
+                                {
+                                    <div class="small text-muted">• @n</div>
+                                }
+                                @foreach (var w in r.Warnings)
+                                {
+                                    <div class="small text-danger">⚠ @w</div>
+                                }
+                                @if (r.New.Count > 0)
+                                {
+                                    <div class="small text-primary">new: @string.Join(", ", r.New)</div>
+                                }
+                            </td>
+                            <td><input type="date" name="rows[@i].Date" value="@r.Date?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" /></td>
+                            <td>
+                                <input type="checkbox" name="rows[@i].Color" value="true" class="form-check-input" @(r.Color ? "checked" : "") />
+                                <input type="hidden" name="rows[@i].Color" value="false" />
+                            </td>
+                            <td>
+                                <input name="rows[@i].Camera" value="@r.Camera" list="cameras" class="form-control form-control-sm" />
+                                <input name="rows[@i].Format" value="@r.Format" list="formats" class="form-control form-control-sm mt-1" title="Only used when the camera is new" />
+                            </td>
+                            <td><input name="rows[@i].Stock" value="@r.Stock" list="stocks" class="form-control form-control-sm" /></td>
+                            <td><input name="rows[@i].Iso" value="@r.Iso?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" class="form-control form-control-sm num" /></td>
+                            <td><input name="rows[@i].Ei" value="@r.Ei?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" class="form-control form-control-sm num" /></td>
+                            <td><input name="rows[@i].Developer" value="@r.Developer" list="developers" class="form-control form-control-sm" /></td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <input type="number" min="0" name="rows[@i].Page" value="@r.Page" class="form-control form-control-sm num" />
+                                    <input type="number" min="0" name="rows[@i].Line" value="@r.Line" class="form-control form-control-sm num" />
+                                </div>
+                                <div class="small text-muted">@r.PlacementSource</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Import selected</button>
+    </form>
+}
+
+@if (Model.Skipped.Count > 0)
+{
+    <h5 class="mt-4">Skipped folders</h5>
+    <ul class="small text-muted">
+        @foreach (var s in Model.Skipped)
+        {
+            <li><code>@s.Folder</code>: @s.Reason</li>
+        }
+    </ul>
+}
+
+@section Scripts {
+    <script>
+        function updateCount() {
+            document.getElementById('selectedCount').textContent =
+                document.querySelectorAll('.row-include:checked').length;
+        }
+        function toggleAll(on) {
+            document.querySelectorAll('.row-include:not(:disabled)').forEach(function (c) { c.checked = on; });
+            updateCount();
+        }
+        document.querySelectorAll('.row-include').forEach(function (c) { c.addEventListener('change', updateCount); });
+    </script>
+}

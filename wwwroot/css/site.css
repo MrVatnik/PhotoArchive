@@ -126,3 +126,8 @@ body {
     flex-wrap: wrap;
     justify-content: center;
 }
+
+/* Import review table */
+.import-table td { min-width: 6rem; }
+.import-table .folder-cell { min-width: 16rem; max-width: 22rem; }
+.import-table .num { width: 5rem; }

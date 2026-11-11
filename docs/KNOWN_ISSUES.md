@@ -46,4 +46,6 @@ Severity: 🔴 bug or data risk · 🟠 broken or unfinished feature · 🟡 tec
 | 22 | There are no tests, no CI and no README (until now). |
 | 23 | Naming is inconsistent (`Is_Liked`, `Place_In_Line`, `To_String`, `Min/Sec`). |
 | 24 | New: the single-photo Create/Edit forms still take a free-text `Pic` and don't check that the file exists or is unique in the film. |
-| 25 | New: uploads accept JPEG/PNG/WebP only. TIFF scans would need a decoder other than SkiaSharp. |
+| 25 | New: uploads accept JPEG/PNG/WebP only. TIFF scans would need a decoder other than SkiaSharp. The importer uses a roll's JPEG sub-folder when the top level holds only TIFFs. |
+| 26 | ✅ Fixed: originals in nested folders (`roll/roll`, `roll/Export`) returned 404 because the whole folder path was escaped as one URL segment. This affected film 1017 too. |
+| 27 | New: the importer creates recipes with development time 0:00 ("unknown"); fill them in on the Recipes page. |
