@@ -83,4 +83,14 @@ The parent `Details` pages list their children (for example, Film details show t
 ## What's missing structurally
 
 - No authentication or authorisation, although `UseAuthorization` is called.
-- No tests and no CI.
+
+## Tests and CI
+
+`tests/PhotoArchive.Tests` (xUnit), excluded from the web project's compile items:
+
+| Folder | What |
+|--------|------|
+| `Import/` | Unit tests: `RollMetadataParser` against real archive lines, `ImportCatalog` (keys, aliases, frames per strip, LC-A dial), `AlbumIndexReader` on a generated `.docx` |
+| `Integration/` | `AppFactory` (`WebApplicationFactory<Program>`) starts the app in the `Testing` environment with a temp SQLite file and temp originals/cache folders. Covers media (thumb/preview sizes, ETag/304, placeholder, cache invalidation, nested folders), upload, Like, delete rules, page ordering, the importer end to end, and that migrations match the model |
+
+Two small hooks make this possible: the `Testing` environment doesn't read `appsettings.Local.json`, and `DatabaseInitializer` uses `EnsureCreated` instead of the SQL Server migrations on other providers. The CI workflow runs on Ubuntu and Windows.
