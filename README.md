@@ -59,6 +59,14 @@ Thumbnails and previews are generated on first request and in the background: af
 
 > Upgrading from Phase 1: the old `App_Data/thumbnails/{id}.jpg` files are no longer used and can be deleted (the new cache lives in `thumb/` and `preview/` subfolders).
 
+### Tests
+
+```bash
+dotnet test
+```
+
+`tests/PhotoArchive.Tests` holds unit tests for the importer (every tricky line from the real `.txt` files) and integration tests that start the whole app in-process against a temporary SQLite database and temp folders, so they never touch SQL Server or the real archive. GitHub Actions (`.github/workflows/ci.yml`) builds and runs them on Ubuntu and Windows for every pull request and push to `master`.
+
 ### Database migrations
 
 ```bash

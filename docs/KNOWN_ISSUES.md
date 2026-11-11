@@ -43,7 +43,7 @@ Severity: 🔴 bug or data risk · 🟠 broken or unfinished feature · 🟡 tec
 | 19 | The same five-`Include` query and `SelectList` setup are copy-pasted about 15 times. Dead `if (p == null)` checks follow `new Photo()`. |
 | 20 | `ViewBag` and `ViewData` are used instead of view models, so there's no compile-time checking in the views. |
 | 21 | Ordering dropdowns by usage runs a correlated `COUNT` subquery for each row. That's fine at small scale. |
-| 22 | There are no tests, no CI and no README (until now). |
+| 22 | ✅ README, docs, 84 automated tests and a GitHub Actions CI workflow (Ubuntu + Windows) now exist. |
 | 23 | Naming is inconsistent (`Is_Liked`, `Place_In_Line`, `To_String`, `Min/Sec`). |
 | 24 | New: the single-photo Create/Edit forms still take a free-text `Pic` and don't check that the file exists or is unique in the film. |
 | 25 | New: uploads accept JPEG/PNG/WebP only. TIFF scans would need a decoder other than SkiaSharp. The importer uses a roll's JPEG sub-folder when the top level holds only TIFFs. |

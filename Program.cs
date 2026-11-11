@@ -9,9 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Machine-specific overrides (e.g. Storage:OriginalsRoot), not committed - see appsettings.Local.example.json.
 // Environment variables and command-line args are re-added after it so they still take precedence.
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddEnvironmentVariables();
-builder.Configuration.AddCommandLine(args);
+// Automated tests ("Testing" environment) never read it, so they can't touch the real archive.
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+    builder.Configuration.AddEnvironmentVariables();
+    builder.Configuration.AddCommandLine(args);
+}
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -86,3 +90,6 @@ app.MapControllerRoute(
     pattern: "{controller=Films}/{action=Index}/{id?}");
 
 app.Run();
+
+// lets the integration tests start the app (WebApplicationFactory<Program>)
+public partial class Program { }

@@ -71,8 +71,8 @@ These are the features the original design clearly aimed at:
 - Introduce **view models** in place of `ViewBag` (#20). Extract repeated queries into extension methods, for example `IQueryable<Film>.WithDetails()` (#19).
 - Turn on `<TreatWarningsAsErrors>` for nullable warnings once they're cleaned up.
 - Consistent naming: `IsLiked`, `PlaceInLine`, `DevTime` as a `TimeSpan`. This needs a migration.
-- Tests: xUnit + `WebApplicationFactory` + an in-memory SQLite DB. Cover upload, thumbnails, page layout and delete rules.
-- CI: a GitHub Actions workflow that builds, tests and builds the Docker image.
+- ✅ Tests: xUnit + `WebApplicationFactory` + a temp SQLite DB (84 tests: importer parsing, upload, thumbnails, page layout, delete rules, import end to end, migrations in sync).
+- ✅ CI: a GitHub Actions workflow builds and tests on Ubuntu and Windows. A Docker image build can be added when Docker deployment (Phase 5) is done.
 
 ## Phase 5: Optional upgrades (pick what you want)
 

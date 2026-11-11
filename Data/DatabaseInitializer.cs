@@ -17,6 +17,13 @@ namespace PhotoArchive.Data
             var db = scope.ServiceProvider.GetRequiredService<PhotoContext>();
             var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(DatabaseInitializer));
 
+            // the migrations are SQL Server specific; other providers (SQLite in the tests) get the schema from the model
+            if (!db.Database.IsSqlServer())
+            {
+                await db.Database.EnsureCreatedAsync();
+                return;
+            }
+
             if (await db.Database.CanConnectAsync())
             {
                 var baseline = db.Database.GetMigrations().First();
