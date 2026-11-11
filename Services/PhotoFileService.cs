@@ -92,9 +92,9 @@ namespace PhotoArchive.Services
             if (path == null || !File.Exists(path))
                 return PlaceholderUrl;
 
-            return StorageOptions.OriginalsRequestPath + "/"
-                + Uri.EscapeDataString(photo.Film!.FolderName) + "/"
-                + Uri.EscapeDataString(photo.Pic!);
+            // FolderName may be nested ("roll/roll" when JPEGs sit in a sub-folder): escape each segment
+            var folder = string.Join("/", photo.Film!.FolderName.Split('/', '\\').Select(Uri.EscapeDataString));
+            return StorageOptions.OriginalsRequestPath + "/" + folder + "/" + Uri.EscapeDataString(photo.Pic!);
         }
 
         public string ThumbnailUrl(Photo photo) => $"/media/photo/{photo.Id}/thumb";

@@ -50,6 +50,10 @@ Fix the bugs in KNOWN_ISSUES.md, in this order:
 
 **Exit criterion:** you can upload a roll through the UI end to end, with no manual file copying, and see correct thumbnails.
 
+## Archive importer ✅ done (Nov 2026)
+
+> Moved up from Phase 5 ("Import from a folder") because the archive held 107 roll folders and the database only 22. **Import** now pre-fills a review row per unregistered folder from its name, its `.txt` and the paper album index, and creates everything on confirmation. See ARCHIVE_SOURCES.md and ARCHITECTURE.md → "Archive import".
+
 ## Phase 3: Finish v1 features (about 1 week)
 
 These are the features the original design clearly aimed at:
@@ -77,7 +81,7 @@ These are the features the original design clearly aimed at:
 | **Docker / docker-compose** deployment to a NAS or home server | Run it anywhere, with the image volume mounted |
 | **Stats dashboard**: rolls per year, favourite stock, developer usage, keeper rate (liked / total) | Fun for a film shooter, and cheap with the existing data |
 | **Development timer**: start a recipe and get a countdown with agitation beeps | Uses the `Recipe` data directly |
-| **Import from a folder**: point at a scan folder and create a Film and its Photos automatically | Removes the most tedious step |
+| ~~**Import from a folder**~~ ✅ done as the archive importer | |
 | **Contact-sheet / album PDF export** of a page | Fits the "album page" concept |
 | **REST API** (minimal APIs) plus a mobile-friendly UI | Log rolls from your phone while shooting |
 | **UI refresh**: htmx or Blazor SSR in place of jQuery | Smaller JS, smoother interactions |

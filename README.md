@@ -53,6 +53,10 @@ Thumbnails and previews are generated on first request and in the background: af
 
 **Deleting never removes originals.** Deleting a film removes its photo records and cached thumbnails only. Formats, cameras, film types, developers and recipes can't be deleted while something still uses them.
 
+### Importing existing rolls
+
+**Import** (top menu) lists every roll folder under `OriginalsRoot` that isn't in the database yet, pre-filled from the folder name, its `Пленка+Аппарат.txt` and the paper album index (`Плёнки описание.docx`); see [docs/ARCHIVE_SOURCES.md](docs/ARCHIVE_SOURCES.md). Review the rows, fix anything that's wrong, and import. Missing cameras, formats, film types, developers and recipes are created (recipes with development time 0:00, meaning unknown). The importer only writes to the database: files are never moved or renamed. Settings live in the `Import` section (`AlbumIndexFile`, `IgnoredSubfolders`, `LinesPerPage`).
+
 > Upgrading from Phase 1: the old `App_Data/thumbnails/{id}.jpg` files are no longer used and can be deleted (the new cache lives in `thumb/` and `preview/` subfolders).
 
 ### Database migrations
@@ -68,3 +72,4 @@ dotnet ef migrations add <Name>
 - [docs/DATA_MODEL.md](docs/DATA_MODEL.md): the entities, their relations and cascade-delete behaviour
 - [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md): bugs and technical debt found during the 2026 review
 - [docs/ROADMAP.md](docs/ROADMAP.md): proposed plan to finish and upgrade the app
+- [docs/ARCHIVE_SOURCES.md](docs/ARCHIVE_SOURCES.md): how the existing photo archive is organised (folders, `.txt` metadata, the album `.docx`), as input for the importer

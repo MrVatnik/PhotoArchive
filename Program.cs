@@ -39,6 +39,10 @@ builder.Services.AddSingleton<ThumbnailQueue>();
 builder.Services.AddSingleton<IThumbnailQueue>(sp => sp.GetRequiredService<ThumbnailQueue>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<ThumbnailQueue>());
 
+builder.Services.Configure<PhotoArchive.Services.Import.ImportOptions>(builder.Configuration.GetSection(PhotoArchive.Services.Import.ImportOptions.SectionName));
+builder.Services.AddScoped<PhotoArchive.Services.Import.ArchiveScanner>();
+builder.Services.AddScoped<PhotoArchive.Services.Import.ArchiveImporter>();
+
 
 var app = builder.Build();
 
