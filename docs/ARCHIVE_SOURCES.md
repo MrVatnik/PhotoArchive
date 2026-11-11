@@ -44,6 +44,8 @@ Parsing rules:
 | In the files | Means |
 |--------------|-------|
 | Rollei Superpan 200 | **Agfa Aviphot 200** (same emulsion) |
+| Silberra color | **Kodak Aerocolor 125** (re-spooled) |
+| кн2, КН-2 | **КН-2**, an old Soviet B&W negative stock; its box speed isn't recorded, so the ISO defaults to the EI from the notes |
 | aviphot, Aviphot, Agfa Aviphot | Agfa Aviphot 200 |
 | FOMADON R09, R09 | **Rodinal** |
 | AF pyro350, PYRO350, Pyro 350, pyro350, пиро 350 | Pyro 350 (one developer) |
@@ -88,11 +90,11 @@ The index of the physical negative album, up to mid-2022. Sleeves hold **7 strip
 
 ### Dry run against the 2023 backup (Nov 2026)
 
-84 unregistered roll folders were found (plus `папа маленький`, skipped). 79 were pre-selected and imported cleanly into a test copy: 2 192 photos, 4 new cameras (Minoltaflex II, Зоркий 1, Киев-19, Чайка 3), 1 new format (Средний 6x6), 3 developers (ФГ-31П, E-6, Moersch Tanol), 15 film types and 33 recipes. Five rows need a decision before importing:
+84 unregistered roll folders were found (plus `папа маленький`, skipped). 79 were pre-selected and imported cleanly into a test copy: 2 192 photos, 4 new cameras (Minoltaflex II, Зоркий 1, Киев-19, Чайка 3), 1 new format (Средний 6x6), 3 developers (ФГ-31П, E-6, Moersch Tanol), 15 film types and 33 recipes. Five rows were left unchecked by that run; the owner's answers:
 
 | Folder | Why it is unchecked |
 |--------|---------------------|
-| `22-06-01_col_F-1` | Silberra color: ISO not in the notes |
-| `22-07-29_bw_LCA` | `кн2 как 25`: unknown stock and ISO (EI 25 is read correctly) |
-| `23-07-13_col_Vera` | no `.txt` at all |
+| `22-06-01_col_F-1` | Silberra color = Kodak Aerocolor 125 → now pre-filled and checked |
+| `22-07-29_bw_LCA` | `кн2 как 25` = Soviet КН-2 at EI 25 (ISO 25 assumed) → now pre-filled and checked |
+| `23-07-13_col_Vera` | no `.txt`; **not to be imported yet** (stays unchecked, and can't be imported without a stock and ISO) |
 | `23-06-25_BW_MinoltaflexII-RESCAN`, `23-06-26_BW_MinoltaflexII-RESCAN` | second scans of rolls that are imported from their non-RESCAN folder |
