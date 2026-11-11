@@ -95,6 +95,12 @@ namespace PhotoArchive.Services.Import
                 meta.Notes.Add($"{meta.Camera} has no EI {ei:0.##} setting: using {nearest:0.##}");
                 meta.Ei = nearest;
             }
+            // known stock whose box speed isn't recorded (e.g. old Soviet КН-2 "как 25"): assume ISO = EI, editable in the review
+            if (meta.Iso == null && meta.Ei != null && ImportCatalog.Stocks.Any(s => s.Name == meta.Stock))
+            {
+                meta.Iso = meta.Ei;
+                meta.Notes.Add($"Box speed of {meta.Stock} not recorded: ISO set to the EI ({meta.Ei:0.##})");
+            }
             if (meta.Iso == null)
                 meta.Warnings.Add("Film speed (ISO) unknown");
 

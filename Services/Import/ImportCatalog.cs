@@ -28,9 +28,9 @@ namespace PhotoArchive.Services.Import
             new("Kodak UltraMax", 400, true, null, "Kodak UltraMax"),
             new("Fuji superia", 200, true, null, "Fuji superia", "Fujifilm superia"),
             new("Тасма Т25", null, false, null, "Тасма Т25", "Тасма т25", "tasma t25"),
-            new("Kodak Aerocolor", 125, true, null, "Kodak Aerocolor", "kodak aerocoloar"),
+            // Silberra Color is re-spooled Kodak Aerocolor (confirmed by the owner)
+            new("Kodak Aerocolor", 125, true, null, "Kodak Aerocolor", "kodak aerocoloar", "Silberra color"),
             new("Silberra ultima", 100, false, null, "Silberra ultima"),
-            new("Silberra color", null, true, null, "Silberra color"),
             new("Kodak ColorPlus", 200, true, null, "Kodak ColorPlus"),
             // Rollei Superpan 200 is the same emulsion as Agfa Aviphot 200 (confirmed by the owner)
             new("Agfa Aviphot", 200, false, null, "Agfa Aviphot", "Aviphot", "Rollei Superpan", "Rollei superpan"),
@@ -48,6 +48,8 @@ namespace PhotoArchive.Services.Import
             new("Kodak Portra", 400, true, null, "Kodak Portra", "Portra"),
             new("Cyberpank", null, true, null, "Cyberpank", "Cyberpunk"),
             new("Славич Унибром ПЭ", 160, false, null, "Славич Унибром", "Slavich Unibrom"),
+            // old Soviet B&W negative stock; box speed not recorded in the notes
+            new("КН-2", null, false, null, "КН-2", "кн2", "KN-2"),
         };
 
         public static readonly CameraInfo[] Cameras =
